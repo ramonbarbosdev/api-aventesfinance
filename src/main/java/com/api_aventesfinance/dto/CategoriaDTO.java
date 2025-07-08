@@ -2,19 +2,17 @@ package com.api_aventesfinance.dto;
 
 import java.io.Serializable;
 
+import com.api_aventesfinance.enums.TipoCategoria;
 import com.api_aventesfinance.model.Categoria;
-import com.api_aventesfinance.model.enums.TipoCategoria;
 
-public class CategoriaDTO implements Serializable {
+public class CategoriaDTO  {
 
     private Long id_categoria;
     private String cd_categoria;
     private String nm_categoria;
     private TipoCategoria tp_categoria;
 
-    public CategoriaDTO() {
-    } // Construtor necessário para serialização
-
+   
     public CategoriaDTO(Categoria categoria) {
         this.id_categoria = categoria.getId_categoria();
         this.cd_categoria = categoria.getCd_categoria();

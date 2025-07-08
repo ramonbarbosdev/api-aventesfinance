@@ -68,8 +68,8 @@
 			<artifactId>postgresql</artifactId>
     		<version>42.7.1</version>
 		</dependency>
-		
 		<!--Conexao-->
+		
 		<!--SWAGGER-->
 		<dependency>
 			<groupId>org.springdoc</groupId>

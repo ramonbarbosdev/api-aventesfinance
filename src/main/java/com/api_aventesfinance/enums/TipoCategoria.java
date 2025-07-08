@@ -1,4 +1,4 @@
-package com.api_aventesfinance.model.enums;
+package com.api_aventesfinance.enums;
 
 public enum  TipoCategoria {
     RECEITA,   

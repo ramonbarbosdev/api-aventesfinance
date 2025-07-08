@@ -1,6 +1,6 @@
 package com.api_aventesfinance.model;
 
-import com.api_aventesfinance.model.enums.TipoCategoria;
+import com.api_aventesfinance.enums.TipoCategoria;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
