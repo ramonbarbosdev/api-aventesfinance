@@ -11,6 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "item_lancamento")
@@ -24,7 +25,7 @@ public class ItemLancamento {
     @JoinColumn(name = "id_lancamento", insertable = false, updatable = false)
     private Lancamento Lancamento;
 
-    @NotBlank(message = "O Lancamento é obrigatorio!")
+    @NotNull(message = "O Lancamento é obrigatorio!")
     @Column(name = "id_lancamento")
     private Long id_lancamento;
 
@@ -36,11 +37,11 @@ public class ItemLancamento {
     @JoinColumn(name = "id_categoria", insertable = false, updatable = false)
     private Categoria categoria;
 
-    @NotBlank(message = "O Categoria é obrigatorio!")
+    @NotNull(message = "O Categoria é obrigatorio!")
     @Column(name = "id_categoria")
     private Long id_categoria;
 
-    @NotBlank(message = "O valor é obrigatorio!")
+    @NotNull(message = "O valor é obrigatorio!")
     @Column(unique = false, nullable = false)
     private Double vl_itemlancamento;
 

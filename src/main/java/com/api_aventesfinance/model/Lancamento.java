@@ -1,16 +1,24 @@
 package com.api_aventesfinance.model;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "lancamento")
@@ -20,28 +28,24 @@ public class Lancamento {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id_lancemento;
 
-    @NotBlank(message = "O codigo é obrigatorio!")
+    @NotBlank(message = "O codigo é obrigatorio!") // para string
     @Column(unique = false, nullable = false)
     private String cd_lancemento;
 
-    @NotBlank(message = "O Data é obrigatorio!")
+    @NotNull(message = "A data de lançamento é obrigatória")
     @Column(unique = false, nullable = false)
-    private LocalDateTime dt_lancamento;
+    private OffsetDateTime  dt_lancamento;
 
     @ManyToOne()
     @JoinColumn(name = "id_centrocusto", insertable = false, updatable = false)
     private CentroCusto centroCusto;
 
-    @NotBlank(message = "O Centro de Custo é obrigatorio!")
+    @NotNull(message = "A centro de custo é obrigatória")  
     @Column(name = "id_centrocusto")
     private Long id_centrocusto;
 
     @Column(unique = false, nullable = true)
     private Double vl_total;
-
-    @NotBlank(message = "O Data ano é obrigatorio!")
-    @Column(unique = false, nullable = false)
-    private Integer dt_ano;
 
     @NotBlank(message = "O Data ano-mês é obrigatorio!")
     @Column(unique = false, nullable = false)
@@ -49,6 +53,18 @@ public class Lancamento {
 
     @Column(unique = false, nullable = true)
     private String ds_lancemento;
+
+    //Listagem de itens
+    @OneToMany(mappedBy = "id_lancamento", cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
+    public List<ItemLancamento> itemlancamento = new ArrayList<ItemLancamento>();
+
+    public List<ItemLancamento> getItemlancamento() {
+        return itemlancamento != null ? itemlancamento : Collections.emptyList();
+    }
+
+    public void setItemlancamento(List<ItemLancamento> itemlancamento) {
+        this.itemlancamento = itemlancamento;
+    }
 
     public Long getId_lancemento() {
         return id_lancemento;
@@ -82,21 +98,14 @@ public class Lancamento {
         this.vl_total = vl_total;
     }
 
-    public LocalDateTime getDt_lancamento() {
+    public OffsetDateTime   getDt_lancamento() {
         return dt_lancamento;
     }
 
-    public void setDt_lancamento(LocalDateTime dt_lancamento) {
+    public void setDt_lancamento(OffsetDateTime  dt_lancamento) {
         this.dt_lancamento = dt_lancamento;
     }
 
-    public Integer getDt_ano() {
-        return dt_ano;
-    }
-
-    public void setDt_ano(Integer dt_ano) {
-        this.dt_ano = dt_ano;
-    }
 
     public String getDt_anomes() {
         return dt_anomes;

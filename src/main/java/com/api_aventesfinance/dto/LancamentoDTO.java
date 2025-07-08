@@ -3,6 +3,7 @@ package com.api_aventesfinance.dto;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+import com.api_aventesfinance.model.ItemLancamento;
 import com.api_aventesfinance.model.Lancamento;
 
 public class LancamentoDTO {
@@ -14,6 +15,8 @@ public class LancamentoDTO {
     private Integer dt_ano;
     private String dt_anomes;
     private String ds_lancamento;
+    private Double vl_total;
+    // private ItemLancamento itemlancamento;
 
     public LancamentoDTO(Lancamento objeto) {
         this.id_lancamento = objeto.getId_lancemento();
@@ -23,8 +26,19 @@ public class LancamentoDTO {
         this.dt_ano = objeto.getDt_ano();
         this.dt_anomes = objeto.getDt_anomes();
         this.ds_lancamento = objeto.getDs_lancemento();
+        this.vl_total = objeto.getVl_total();
+
+        // this.itemlancamento = (ItemLancamento) objeto.getItemlancamento();
 
     }
+
+    // public ItemLancamento getItemlancamento() {
+    //     return itemlancamento;
+    // }
+
+    // public void setItemlancamento(ItemLancamento itemlancamento) {
+    //     this.itemlancamento = itemlancamento;
+    // }
 
     public Long getId_lancamento() {
         return id_lancamento;
@@ -80,6 +94,14 @@ public class LancamentoDTO {
 
     public void setDs_lancamento(String ds_lancamento) {
         this.ds_lancamento = ds_lancamento;
+    }
+
+    public Double getVl_total() {
+        return vl_total;
+    }
+
+    public void setVl_total(Double vl_total) {
+        this.vl_total = vl_total;
     }
 
 }
