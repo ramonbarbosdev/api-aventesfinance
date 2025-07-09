@@ -12,6 +12,7 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +35,7 @@ import com.api_aventesfinance.model.PluggyAuthRequest;
 import com.api_aventesfinance.model.PluggyAuthResponse;
 import com.api_aventesfinance.model.Usuario;
 import com.api_aventesfinance.repository.UsuarioRepository;
+import com.api_aventesfinance.service.PluggyService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -49,6 +51,9 @@ public class PluggyController {
 	@Autowired
 	private UsuarioRepository usuarioRepository;
 
+	@Autowired
+	private PluggyService pluggyService;
+
 	@GetMapping(value = "/obter-token/{id_usuario}")
 	public ResponseEntity<?> obterAcessoToken(@PathVariable Long id_usuario)
 			throws JsonMappingException, JsonProcessingException {
@@ -60,8 +65,7 @@ public class PluggyController {
 		String clientSecret = "9b1fae42-1bcf-45f4-bee6-a1e095532f4c";
 		String clientUserId = usuario.get().getLogin();
 
-		PluggyAuthRequest request = new PluggyAuthRequest(clientId,
-				clientSecret);
+		PluggyAuthRequest request = new PluggyAuthRequest(clientId, clientSecret);
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
@@ -75,9 +79,10 @@ public class PluggyController {
 			PluggyAuthResponse auth = response.getBody();
 			String apiKey = auth.getApiKey();
 
-			Boolean status = gerarConnectToken(apiKey, clientUserId)  ;
+			String accessToken = pluggyService.gerarConnectToken(apiKey, clientUserId);
 
-			return ResponseEntity.ok(Map.of("accessToken", apiKey,"clientUserId", clientUserId, "status", status));
+			return ResponseEntity
+					.ok(Map.of("apiKey", apiKey, "accessToken", accessToken, "clientUserId", clientUserId));
 
 		} catch (Exception e) {
 
@@ -86,33 +91,96 @@ public class PluggyController {
 
 	}
 
-	public Boolean gerarConnectToken(String apiKey, String clientUserId) {
-		RestTemplate restTemplate = new RestTemplate();
+	@GetMapping(value = "/criar-item/{apiKey}/{id_item}")
+	public ResponseEntity<?> criarItem(@PathVariable String apiKey, @PathVariable Long id_item) {
+
+		//nubank - 612
+
+		Map<String, Object> item = pluggyService.criarItemSandbox(apiKey, id_item);
+
+		return new ResponseEntity<>(item, HttpStatus.OK);
+
+	}
+
+	@GetMapping(value = "/obter-item/{apiKey}")
+	public ResponseEntity<?> obterItens(@PathVariable String apiKey) {
+
+		String url = "https://api.pluggy.ai/items";
 
 		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.set("X-API-KEY", apiKey);
+		headers.setContentType(MediaType.APPLICATION_JSON);
 
-		Map<String, Object> options = Map.of("clientUserId", clientUserId);
-		Map<String, Object> body = Map.of("options", options);
+		HttpEntity<Map<String, Object>> entity = new HttpEntity<>(null, headers);
 
-		HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
+		ResponseEntity<Map> response = new RestTemplate().exchange(url, HttpMethod.GET, entity, Map.class);
 
-		try {
-			ResponseEntity<PluggyAuthResponse> response = restTemplate.postForEntity(
-					"https://api.pluggy.ai/connect_token",
-					entity,
-					PluggyAuthResponse.class);
+		return new ResponseEntity<>(response.getBody(), HttpStatus.OK);
 
-			PluggyAuthResponse auth = response.getBody();
+	}
 
-			return true;
+	@GetMapping(value = "/contas/{apiKey}")
+	public ResponseEntity<?> obterContas(@PathVariable String apiKey) {
 
-		} catch (HttpClientErrorException e) {
-			return false;
-		}
+		String url = "https://api.pluggy.ai/connectors";
 
-		
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("X-API-KEY", apiKey);
+		headers.setContentType(MediaType.APPLICATION_JSON);
+
+		HttpEntity<Map<String, Object>> entity = new HttpEntity<>(null, headers);
+
+		ResponseEntity<Map> response = new RestTemplate().exchange(url, HttpMethod.GET, entity, Map.class);
+
+		return new ResponseEntity<>(response.getBody(), HttpStatus.OK);
+	}
+
+	@GetMapping(value = "/conectores/{apiKey}")
+	public ResponseEntity<?> obterConectores(@PathVariable String apiKey) {
+
+		String url = "https://api.pluggy.ai/connectors";
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("X-API-KEY", apiKey);
+		headers.setContentType(MediaType.APPLICATION_JSON);
+
+		HttpEntity<Map<String, Object>> entity = new HttpEntity<>(null, headers);
+
+		ResponseEntity<Map> response = new RestTemplate().exchange(url, HttpMethod.GET, entity, Map.class);
+
+		return new ResponseEntity<>(response.getBody(), HttpStatus.OK);
+	}
+
+	@GetMapping(value = "/conectores/{apiKey}/{id}")
+	public ResponseEntity<?> obterConectoresPorId(@PathVariable String apiKey, @PathVariable Long id) {
+
+		String url = "https://api.pluggy.ai/connectors/" + id;
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("X-API-KEY", apiKey);
+		headers.setContentType(MediaType.APPLICATION_JSON);
+
+		HttpEntity<Map<String, Object>> entity = new HttpEntity<>(null, headers);
+
+		ResponseEntity<Map> response = new RestTemplate().exchange(url, HttpMethod.GET, entity, Map.class);
+
+		return new ResponseEntity<>(response.getBody(), HttpStatus.OK);
+	}
+
+	@GetMapping(value = "/webhooks/{apiKey}")
+	public ResponseEntity<?> obterGanchos(@PathVariable String apiKey) {
+
+		String url = "https://api.pluggy.ai/webhooks";
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("X-API-KEY", apiKey);
+		headers.setContentType(MediaType.APPLICATION_JSON);
+
+		HttpEntity<Map<String, Object>> entity = new HttpEntity<>(null, headers);
+
+		ResponseEntity<Map> response = new RestTemplate().exchange(url, HttpMethod.GET, entity, Map.class);
+
+		return new ResponseEntity<>(response.getBody(), HttpStatus.OK);
 	}
 
 }
