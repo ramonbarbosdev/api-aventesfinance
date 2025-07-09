@@ -28,11 +28,14 @@ import com.api_aventesfinance.dto.UsuarioDTO;
 import com.api_aventesfinance.model.Usuario;
 import com.api_aventesfinance.repository.UsuarioRepository;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 
 
 //@CrossOrigin(origins = "*")
 @RestController /*ARQUITETURA REST*/
 @RequestMapping(value = "/usuario")
+@Tag(name = "Usuarios")
 public class UsuarioController {
 	
 	@Autowired /*se fosse CDI seria @inject*/
