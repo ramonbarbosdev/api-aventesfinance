@@ -93,81 +93,6 @@ public class PluggyController {
 
 	}
 
-	@PostMapping(value = "/criar-item")
-	public ResponseEntity<?> criarItem(@RequestBody PluggyItemRequest request) {
-
-		// nubank - 612
-
-		if (request.getAccessToken() == null || request.getAccessToken().isEmpty()) {
-			Map<String, Object> message = Map.of("message", "Token nao foi informado!");
-
-			return new ResponseEntity<>(message, HttpStatus.OK);
-
-		}
-
-		RestTemplate restTemplate = new RestTemplate();
-
-		// Monta os dados de credenciais (ex: CPF)
-		Map<String, Object> credentials = Map.of(
-			"cpf", request.getCpf(),
-			"agency", request.getAgency(),
-			"account", request.getAccount(),
-			"password", request.getPassword()
-			);
-
-		Map<String, Object> body = Map.of(
-				"connectorId", request.getConnectorId(),
-				"parameters", credentials);
-
-		HttpHeaders headers = new HttpHeaders();
-		headers.set("X-API-KEY", request.getAccessToken());
-		headers.setContentType(MediaType.APPLICATION_JSON);
-
-		HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
-
-		ResponseEntity<Map> response = restTemplate.postForEntity(
-				"https://api.pluggy.ai/items",
-				entity,
-				Map.class);
-
-		response.getBody();
-
-		return new ResponseEntity<>(response, HttpStatus.OK);
-
-	}
-
-	@GetMapping(value = "/obter-item/{apiKey}")
-	public ResponseEntity<?> obterItens(@PathVariable String apiKey) {
-
-		String url = "https://api.pluggy.ai/items";
-
-		HttpHeaders headers = new HttpHeaders();
-		headers.set("X-API-KEY", apiKey);
-		headers.setContentType(MediaType.APPLICATION_JSON);
-
-		HttpEntity<Map<String, Object>> entity = new HttpEntity<>(null, headers);
-
-		ResponseEntity<Map> response = new RestTemplate().exchange(url, HttpMethod.GET, entity, Map.class);
-
-		return new ResponseEntity<>(response.getBody(), HttpStatus.OK);
-
-	}
-
-	@GetMapping(value = "/contas/{apiKey}")
-	public ResponseEntity<?> obterContas(@PathVariable String apiKey) {
-
-		String url = "https://api.pluggy.ai/connectors";
-
-		HttpHeaders headers = new HttpHeaders();
-		headers.set("X-API-KEY", apiKey);
-		headers.setContentType(MediaType.APPLICATION_JSON);
-
-		HttpEntity<Map<String, Object>> entity = new HttpEntity<>(null, headers);
-
-		ResponseEntity<Map> response = new RestTemplate().exchange(url, HttpMethod.GET, entity, Map.class);
-
-		return new ResponseEntity<>(response.getBody(), HttpStatus.OK);
-	}
 
 	@GetMapping(value = "/conectores/{apiKey}")
 	public ResponseEntity<?> obterConectores(@PathVariable String apiKey) {
@@ -215,6 +140,124 @@ public class PluggyController {
 		ResponseEntity<Map> response = new RestTemplate().exchange(url, HttpMethod.GET, entity, Map.class);
 
 		return new ResponseEntity<>(response.getBody(), HttpStatus.OK);
+	}
+
+	// ITEMS
+
+	@PostMapping(value = "/criar-item")
+	public ResponseEntity<?> criarItem(@RequestBody PluggyItemRequest request) {
+
+		// nubank - 612
+
+		if (request.getAccessToken() == null || request.getAccessToken().isEmpty()) {
+			Map<String, Object> message = Map.of("message", "Token nao foi informado!");
+
+			return new ResponseEntity<>(message, HttpStatus.OK);
+
+		}
+
+		RestTemplate restTemplate = new RestTemplate();
+
+		// Monta os dados de credenciais (ex: CPF)
+		Map<String, Object> credentials = Map.of(
+				"cpf", request.getCpf(),
+				"agency", request.getAgency(),
+				"account", request.getAccount(),
+				"password", request.getPassword());
+
+		Map<String, Object> body = Map.of(
+				"connectorId", request.getConnectorId(),
+				"parameters", credentials);
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("X-API-KEY", request.getAccessToken());
+		headers.setContentType(MediaType.APPLICATION_JSON);
+
+		HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
+
+		ResponseEntity<Map> response = restTemplate.postForEntity(
+				"https://api.pluggy.ai/items",
+				entity,
+				Map.class);
+
+		response.getBody();
+
+		return new ResponseEntity<>(response, HttpStatus.OK);
+
+	}
+
+	@GetMapping(value = "/obter-item/{id_item}/{apiKey}")
+	public ResponseEntity<?> obterItens(@PathVariable String id_item, @PathVariable String apiKey) {
+
+		String url = "https://api.pluggy.ai/items/" + id_item;
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("X-API-KEY", apiKey);
+		headers.setContentType(MediaType.APPLICATION_JSON);
+
+		HttpEntity<Map<String, Object>> entity = new HttpEntity<>(null, headers);
+
+		ResponseEntity<Map> response = new RestTemplate().exchange(url, HttpMethod.GET, entity, Map.class);
+
+		return new ResponseEntity<>(response.getBody(), HttpStatus.OK);
+
+	}
+
+	// Consentimentos
+
+	@GetMapping(value = "/concentimento/{id_item}/{apiKey}")
+	public ResponseEntity<?> obterConsentimento(@PathVariable String id_item, @PathVariable String apiKey) {
+
+		String url = "https://api.pluggy.ai/consents?itemId="+id_item;
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("X-API-KEY", apiKey);
+		headers.setContentType(MediaType.APPLICATION_JSON);
+
+		HttpEntity<Map<String, Object>> entity = new HttpEntity<>(null, headers);
+
+		ResponseEntity<Map> response = new RestTemplate().exchange(url, HttpMethod.GET, entity, Map.class);
+
+		return new ResponseEntity<>(response.getBody(), HttpStatus.OK);
+
+	}
+
+	// CONTAS
+
+	@GetMapping(value = "/conta/{id_item}/{apiKey}")
+	public ResponseEntity<?> obterConta(@PathVariable String id_item, @PathVariable String apiKey) {
+
+		String url = "https://api.pluggy.ai/accounts?itemId="+id_item;
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("X-API-KEY", apiKey);
+		headers.setContentType(MediaType.APPLICATION_JSON);
+
+		HttpEntity<Map<String, Object>> entity = new HttpEntity<>(null, headers);
+
+		ResponseEntity<Map> response = new RestTemplate().exchange(url, HttpMethod.GET, entity, Map.class);
+
+		return new ResponseEntity<>(response.getBody(), HttpStatus.OK);
+
+	}
+
+	// TRANSACOES
+
+	@GetMapping(value = "/transacao/{accountId}/{apiKey}")
+	public ResponseEntity<?> obterTransacao(@PathVariable String accountId, @PathVariable String apiKey) {
+
+		String url = "https://api.pluggy.ai/transactions?accountId="+accountId;
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("X-API-KEY", apiKey);
+		headers.setContentType(MediaType.APPLICATION_JSON);
+
+		HttpEntity<Map<String, Object>> entity = new HttpEntity<>(null, headers);
+
+		ResponseEntity<Map> response = new RestTemplate().exchange(url, HttpMethod.GET, entity, Map.class);
+
+		return new ResponseEntity<>(response.getBody(), HttpStatus.OK);
+
 	}
 
 }
