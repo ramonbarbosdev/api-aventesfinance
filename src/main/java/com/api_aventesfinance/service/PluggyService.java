@@ -10,7 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import com.api_aventesfinance.model.PluggyAuthResponse;
+import com.api_aventesfinance.dto.PluggyAuthResponse;
+import com.api_aventesfinance.dto.PluggyAuthTokenResponse;
 
 @Service
 public class PluggyService {
@@ -55,12 +56,12 @@ public class PluggyService {
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
 
         try {
-            ResponseEntity<PluggyAuthResponse> response = restTemplate.postForEntity(
+            ResponseEntity<PluggyAuthTokenResponse> response = restTemplate.postForEntity(
                     "https://api.pluggy.ai/connect_token",
                     entity,
-                    PluggyAuthResponse.class);
+                    PluggyAuthTokenResponse.class);
 
-            PluggyAuthResponse auth = response.getBody();
+            PluggyAuthTokenResponse auth = response.getBody();
 
             return auth.getAccessToken();
 

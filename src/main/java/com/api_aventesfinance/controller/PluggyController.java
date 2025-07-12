@@ -30,9 +30,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import com.api_aventesfinance.dto.PluggyAuthRequest;
+import com.api_aventesfinance.dto.PluggyAuthResponse;
+import com.api_aventesfinance.dto.PluggyItemRequest;
 import com.api_aventesfinance.dto.UsuarioDTO;
-import com.api_aventesfinance.model.PluggyAuthRequest;
-import com.api_aventesfinance.model.PluggyAuthResponse;
 import com.api_aventesfinance.model.Usuario;
 import com.api_aventesfinance.repository.UsuarioRepository;
 import com.api_aventesfinance.service.PluggyService;
@@ -79,7 +80,8 @@ public class PluggyController {
 			PluggyAuthResponse auth = response.getBody();
 			String apiKey = auth.getApiKey();
 
-			String accessToken = pluggyService.gerarConnectToken(apiKey, clientUserId);
+			String accessToken = "";
+			accessToken = pluggyService.gerarConnectToken(apiKey, clientUserId);
 
 			return ResponseEntity
 					.ok(Map.of("apiKey", apiKey, "accessToken", accessToken, "clientUserId", clientUserId));
@@ -91,14 +93,46 @@ public class PluggyController {
 
 	}
 
-	@GetMapping(value = "/criar-item/{apiKey}/{id_item}")
-	public ResponseEntity<?> criarItem(@PathVariable String apiKey, @PathVariable Long id_item) {
+	@PostMapping(value = "/criar-item")
+	public ResponseEntity<?> criarItem(@RequestBody PluggyItemRequest request) {
 
-		//nubank - 612
+		// nubank - 612
 
-		Map<String, Object> item = pluggyService.criarItemSandbox(apiKey, id_item);
+		if (request.getAccessToken() == null || request.getAccessToken().isEmpty()) {
+			Map<String, Object> message = Map.of("message", "Token nao foi informado!");
 
-		return new ResponseEntity<>(item, HttpStatus.OK);
+			return new ResponseEntity<>(message, HttpStatus.OK);
+
+		}
+
+		RestTemplate restTemplate = new RestTemplate();
+
+		// Monta os dados de credenciais (ex: CPF)
+		Map<String, Object> credentials = Map.of(
+			"cpf", request.getCpf(),
+			"agency", request.getAgency(),
+			"account", request.getAccount(),
+			"password", request.getPassword()
+			);
+
+		Map<String, Object> body = Map.of(
+				"connectorId", request.getConnectorId(),
+				"parameters", credentials);
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("X-API-KEY", request.getAccessToken());
+		headers.setContentType(MediaType.APPLICATION_JSON);
+
+		HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
+
+		ResponseEntity<Map> response = restTemplate.postForEntity(
+				"https://api.pluggy.ai/items",
+				entity,
+				Map.class);
+
+		response.getBody();
+
+		return new ResponseEntity<>(response, HttpStatus.OK);
 
 	}
 

@@ -1,12 +1,11 @@
-package com.api_aventesfinance.model;
+package com.api_aventesfinance.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class PluggyAuthResponse {
-   
+
     @JsonProperty("apiKey")
     private String apiKey;
-    private String accessToken;
 
     public PluggyAuthResponse() {}
 
@@ -16,13 +15,6 @@ public class PluggyAuthResponse {
 
     public void setApiKey(String apiKey) {
         this.apiKey = apiKey;
-    }
-
-    public String getAccessToken() {
-        return accessToken;
-    }
-    public void setAccessToken(String accessToken) {
-        this.accessToken = accessToken;
     }
 
     @Override

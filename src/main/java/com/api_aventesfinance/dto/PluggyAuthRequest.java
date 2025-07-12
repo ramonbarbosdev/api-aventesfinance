@@ -1,4 +1,4 @@
-package com.api_aventesfinance.model;
+package com.api_aventesfinance.dto;
 
 public class PluggyAuthRequest {
     public String clientId;
