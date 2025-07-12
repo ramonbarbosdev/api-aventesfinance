@@ -9,8 +9,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.HttpClientErrorException;
 
 import com.api_aventesfinance.model.ErrorResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -19,7 +24,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<?> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
-         ErrorResponse error = new ErrorResponse(
+        ErrorResponse error = new ErrorResponse(
                 "JPA:" + ex.getMessage(),
                 HttpStatus.BAD_REQUEST.value(),
                 LocalDateTime.now());
@@ -27,21 +32,19 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
 
     }
-    
+
     @ExceptionHandler(TransactionSystemException.class)
     public ResponseEntity<?> handleDataIntegrityViolation(TransactionSystemException ex) {
-           Throwable rootCause = ex.getRootCause(); // aqui está o erro de verdade
+        Throwable rootCause = ex.getRootCause(); // aqui está o erro de verdade
 
-    String detalhes = rootCause != null ? rootCause.getMessage() : "Erro desconhecido na transação JPA";
+        String detalhes = rootCause != null ? rootCause.getMessage() : "Erro desconhecido na transação JPA";
 
-    ErrorResponse error = new ErrorResponse(
-        detalhes,
-        HttpStatus.BAD_REQUEST.value(),
-        LocalDateTime.now()
-    );
+        ErrorResponse error = new ErrorResponse(
+                detalhes,
+                HttpStatus.BAD_REQUEST.value(),
+                LocalDateTime.now());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
-
 
     }
 
@@ -71,6 +74,8 @@ public class GlobalExceptionHandler {
                 LocalDateTime.now());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
+
+ 
 
     // Handler genérico opcional
     @ExceptionHandler(Exception.class)

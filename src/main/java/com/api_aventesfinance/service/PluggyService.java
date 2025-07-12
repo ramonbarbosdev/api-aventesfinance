@@ -12,6 +12,10 @@ import org.springframework.web.client.RestTemplate;
 
 import com.api_aventesfinance.dto.PluggyAuthResponse;
 import com.api_aventesfinance.dto.PluggyAuthTokenResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class PluggyService {
@@ -69,6 +73,15 @@ public class PluggyService {
             return e.getMessage();
         }
 
+    }
+
+    public JsonNode responseError(HttpClientErrorException e) throws JsonMappingException, JsonProcessingException {
+
+        String responseBody = e.getResponseBodyAsString();
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = objectMapper.readTree(responseBody);
+        
+        return jsonNode;
     }
 
 }
