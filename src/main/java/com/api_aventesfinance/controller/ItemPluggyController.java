@@ -127,7 +127,7 @@ public class ItemPluggyController {
 
 	}
 
-	@DeleteMapping(value = "/excluir-item/{id_item}/{apiKey}")
+	@DeleteMapping(value = "/{id_item}/{apiKey}")
 	public ResponseEntity<?> excluirItens(@PathVariable String id_item, @PathVariable String apiKey)
 			throws JsonMappingException, JsonProcessingException {
 
@@ -144,7 +144,7 @@ public class ItemPluggyController {
 			
 			itemPluggyRepository.deleteById(id_item);
 
-			return new ResponseEntity<>(response.getBody(), HttpStatus.OK);
+			 return ResponseEntity.ok(Map.of("message", "Item excluido com sucesso."));
 
 		} catch (HttpClientErrorException e) {
 			JsonNode error = pluggyService.responseError(e);
