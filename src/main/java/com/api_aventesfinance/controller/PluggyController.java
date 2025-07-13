@@ -171,42 +171,5 @@ public class PluggyController {
 
 	}
 
-	// CONTAS
-
-	@GetMapping(value = "/conta/{id_item}/{apiKey}")
-	public ResponseEntity<?> obterConta(@PathVariable String id_item, @PathVariable String apiKey) {
-
-		String url = "https://api.pluggy.ai/accounts?itemId=" + id_item;
-
-		HttpHeaders headers = new HttpHeaders();
-		headers.set("X-API-KEY", apiKey);
-		headers.setContentType(MediaType.APPLICATION_JSON);
-
-		HttpEntity<Map<String, Object>> entity = new HttpEntity<>(null, headers);
-
-		ResponseEntity<Map> response = new RestTemplate().exchange(url, HttpMethod.GET, entity, Map.class);
-
-		return new ResponseEntity<>(response.getBody(), HttpStatus.OK);
-
-	}
-
-	// TRANSACOES
-
-	@GetMapping(value = "/transacao/{accountId}/{apiKey}")
-	public ResponseEntity<?> obterTransacao(@PathVariable String accountId, @PathVariable String apiKey) {
-
-		String url = "https://api.pluggy.ai/transactions?accountId=" + accountId;
-
-		HttpHeaders headers = new HttpHeaders();
-		headers.set("X-API-KEY", apiKey);
-		headers.setContentType(MediaType.APPLICATION_JSON);
-
-		HttpEntity<Map<String, Object>> entity = new HttpEntity<>(null, headers);
-
-		ResponseEntity<Map> response = new RestTemplate().exchange(url, HttpMethod.GET, entity, Map.class);
-
-		return new ResponseEntity<>(response.getBody(), HttpStatus.OK);
-
-	}
-
+	
 }
