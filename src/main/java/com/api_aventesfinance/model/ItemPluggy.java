@@ -27,6 +27,9 @@ public class ItemPluggy {
 
     private String type;
 
+    @Column(name = "fl_main")
+    private Boolean flMain;
+
 
     public String getId_item() {
         return id_item;
@@ -61,5 +64,13 @@ public class ItemPluggy {
     public void setType(String type) {
         this.type = type;
     }
+
+   public Boolean getFlMain() {
+       return flMain;
+   }
+   public void setFlMain(Boolean flMain) {
+       this.flMain = flMain;
+   }
+    
   
 }

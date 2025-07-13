@@ -22,4 +22,7 @@ public interface ItemLancamentoRepository extends CrudRepository<ItemLancamento,
 
     // @Query(value = "SELECT CASE WHEN MAX(c.cd_centrocusto) IS NULL THEN '0' ELSE MAX(c.cd_centrocusto) END FROM CentroCusto c", nativeQuery = true)
     // Long obterSequencial();
+
+   
+
 }

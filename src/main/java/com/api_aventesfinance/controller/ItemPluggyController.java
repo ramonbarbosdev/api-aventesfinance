@@ -2,6 +2,7 @@ package com.api_aventesfinance.controller;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -158,6 +159,29 @@ public class ItemPluggyController {
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+
+    }
+
+    @GetMapping(value = "/item-principal/{id_item}")
+    public ResponseEntity<?> tornarContaPrincipal(@PathVariable String id_item)
+            throws JsonMappingException, JsonProcessingException {
+
+        Optional<ItemPluggy> objeto = itemPluggyRepository.findById(id_item);
+
+        if( objeto.get().getFlMain() != null && objeto.get().getFlMain() == true)
+        {
+            return ResponseEntity.ok(Map.of("message", "O item ja é uma conta principal!"));
+        }
+
+        Optional<ItemPluggy> mainAtual = itemPluggyRepository.findByFlMainTrue();
+        if(mainAtual.isPresent())
+        {
+            itemPluggyRepository.atualizarMain(false,mainAtual.get().getId_item());
+        }
+        
+        itemPluggyRepository.atualizarMain(true, id_item);
+
+        return ResponseEntity.ok(Map.of("message", "O "+ objeto.get().getName()+" agora é principal!"));
 
     }
 

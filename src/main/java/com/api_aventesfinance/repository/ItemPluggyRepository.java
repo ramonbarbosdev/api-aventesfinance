@@ -1,6 +1,7 @@
 package com.api_aventesfinance.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -18,5 +19,10 @@ import jakarta.transaction.Transactional;
 @Transactional
 public interface ItemPluggyRepository extends CrudRepository<ItemPluggy, String> {
 
+    @org.springframework.transaction.annotation.Transactional
+    @Modifying
+    @Query(nativeQuery = true, value = "update item_pluggy set fl_main = ?1 where id_item = ?2")
+    void atualizarMain(Boolean fl_main, String id_item);
 
+    Optional<ItemPluggy> findByFlMainTrue();
 }
