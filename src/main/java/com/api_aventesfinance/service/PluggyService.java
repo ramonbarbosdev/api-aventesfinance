@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -75,12 +76,27 @@ public class PluggyService {
 
     }
 
+    public ResponseEntity<Map> obterConta(String apiKey, String id_item) {
+        String url = "https://api.pluggy.ai/accounts?itemId=" + id_item;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-API-KEY", apiKey);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(null, headers);
+
+        ResponseEntity<Map> response = new RestTemplate().exchange(url, HttpMethod.GET, entity, Map.class);
+
+        return response;
+
+    }
+
     public JsonNode responseError(HttpClientErrorException e) throws JsonMappingException, JsonProcessingException {
 
         String responseBody = e.getResponseBodyAsString();
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(responseBody);
-        
+
         return jsonNode;
     }
 
