@@ -64,9 +64,11 @@ public class TransacaoPluggyController {
 
 			List<Map<String, Object>> resultList = (List<Map<String, Object>>) resultsConta;
 
-			if(resultList.get(0).get("id") != null  )
+			// 0 - credito, 1 -  banco
+
+			if(resultList.get(1).get("id") != null  )
 			{
-				accountId = (String) resultList.get(0).get("id");
+				accountId = (String) resultList.get(1).get("id");
 			}
 
 			String url = "https://api.pluggy.ai/transactions?accountId=" + accountId;
