@@ -57,8 +57,8 @@ public class TransacaoPluggyController {
 
 	// TRANSACOES
 
-	@GetMapping(value = "/transacao/{accountId}/{apiKey}")
-	public ResponseEntity<?> obterTransacao(@PathVariable String accountId, @PathVariable String apiKey) {
+	@GetMapping(value = "/{accountId}/{apiKey}")
+	public ResponseEntity<?> obterTodasTransacao(@PathVariable String accountId, @PathVariable String apiKey) {
 
 		String url = "https://api.pluggy.ai/transactions?accountId=" + accountId;
 

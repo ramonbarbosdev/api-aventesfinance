@@ -35,6 +35,7 @@ import com.api_aventesfinance.dto.PluggyAuthRequest;
 import com.api_aventesfinance.dto.PluggyAuthResponse;
 import com.api_aventesfinance.dto.PluggyItemRequest;
 import com.api_aventesfinance.dto.PluggyItemResponse;
+import com.api_aventesfinance.dto.PluggyTransacaoResponse;
 import com.api_aventesfinance.dto.UsuarioDTO;
 import com.api_aventesfinance.model.ItemPluggy;
 import com.api_aventesfinance.model.Usuario;
@@ -42,6 +43,7 @@ import com.api_aventesfinance.repository.ItemPluggyRepository;
 import com.api_aventesfinance.repository.UsuarioRepository;
 import com.api_aventesfinance.service.PluggyService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -114,11 +116,16 @@ public class PluggyController {
 
 		ResponseEntity<Map> response = new RestTemplate().exchange(url, HttpMethod.GET, entity, Map.class);
 
-		return new ResponseEntity<>(response.getBody(), HttpStatus.OK);
+		Object results = response.getBody().get("results");
+	
+		return new ResponseEntity<>(results, HttpStatus.OK);
 	}
 
 	@GetMapping(value = "/conectores/{apiKey}/{id}")
 	public ResponseEntity<?> obterConectoresPorId(@PathVariable String apiKey, @PathVariable Long id) {
+
+		// PAN - 657
+		// Nubank - 612
 
 		String url = "https://api.pluggy.ai/connectors/" + id;
 
