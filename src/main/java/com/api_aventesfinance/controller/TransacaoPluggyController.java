@@ -68,7 +68,7 @@ public class TransacaoPluggyController {
 
 			if(resultList.get(1).get("id") != null  )
 			{
-				accountId = (String) resultList.get(1).get("id");
+				accountId = (String) resultList.get(0).get("id");
 			}
 
 			String url = "https://api.pluggy.ai/transactions?accountId=" + accountId;

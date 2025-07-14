@@ -36,7 +36,7 @@ public class LancamentoService {
 
         if (itens != null && itens.size() > 0) {
             for (ItemLancamento item : itens) {
-                item.setId_lancamento(objeto.getId_lancemento());
+                item.setId_lancamento(objeto.getId_lancamento());
                 // itemObjetoService.validacaoCadastrar(item, itens, objeto.getId_lancemento());
                 item = itemObjetoRepository.save(item);
                 vl_lancamento += item.getVl_itemlancamento();

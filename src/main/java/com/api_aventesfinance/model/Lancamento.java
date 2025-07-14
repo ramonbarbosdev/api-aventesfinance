@@ -26,11 +26,11 @@ public class Lancamento {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id_lancemento;
+    private Long id_lancamento;
 
     @NotBlank(message = "O codigo é obrigatorio!") // para string
     @Column(unique = false, nullable = false)
-    private String cd_lancemento;
+    private String cd_lancamento;
 
     @NotNull(message = "A data de lançamento é obrigatória")
     @Column(unique = false, nullable = false)
@@ -52,7 +52,7 @@ public class Lancamento {
     private String dt_anomes;
 
     @Column(unique = false, nullable = true)
-    private String ds_lancemento;
+    private String ds_lancamento;
 
     //Listagem de itens
     @OneToMany(mappedBy = "id_lancamento", cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
@@ -66,20 +66,20 @@ public class Lancamento {
         this.itemlancamento = itemlancamento;
     }
 
-    public Long getId_lancemento() {
-        return id_lancemento;
+    public Long getId_lancamento() {
+        return id_lancamento;
     }
 
-    public void setId_lancemento(Long id_lancemento) {
-        this.id_lancemento = id_lancemento;
+    public void setId_lancamento(Long id_lancamento) {
+        this.id_lancamento = id_lancamento;
     }
 
-    public String getCd_lancemento() {
-        return cd_lancemento;
+    public String getCd_lancamento() {
+        return cd_lancamento;
     }
 
-    public void setCd_lancemento(String cd_lancemento) {
-        this.cd_lancemento = cd_lancemento;
+    public void setCd_lancamento(String cd_lancamento) {
+        this.cd_lancamento = cd_lancamento;
     }
 
     public Long getId_centrocusto() {
@@ -115,12 +115,12 @@ public class Lancamento {
         this.dt_anomes = dt_anomes;
     }
 
-    public String getDs_lancemento() {
-        return ds_lancemento;
+    public String getDs_lancamento() {
+        return ds_lancamento;
     }
 
-    public void setDs_lancemento(String ds_lancemento) {
-        this.ds_lancemento = ds_lancemento;
+    public void setDs_lancamento(String ds_lancamento) {
+        this.ds_lancamento = ds_lancamento;
     }
 
 }

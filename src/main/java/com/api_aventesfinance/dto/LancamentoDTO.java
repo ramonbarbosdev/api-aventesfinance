@@ -19,12 +19,12 @@ public class LancamentoDTO {
     // private ItemLancamento itemlancamento;
 
     public LancamentoDTO(Lancamento objeto) {
-        this.id_lancamento = objeto.getId_lancemento();
-        this.cd_lacamento = objeto.getCd_lancemento();
+        this.id_lancamento = objeto.getId_lancamento();
+        this.cd_lacamento = objeto.getCd_lancamento();
         this.dt_lancamento = objeto.getDt_lancamento();
         this.id_centrocusto = objeto.getId_centrocusto();
         this.dt_anomes = objeto.getDt_anomes();
-        this.ds_lancamento = objeto.getDs_lancemento();
+        this.ds_lancamento = objeto.getDs_lancamento();
         this.vl_total = objeto.getVl_total();
 
         // this.itemlancamento = (ItemLancamento) objeto.getItemlancamento();
