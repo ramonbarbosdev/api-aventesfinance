@@ -51,7 +51,7 @@ public class LancamentoController  extends BaseController<Lancamento, Lancamento
 
 
 	@PostMapping(value = "/cadastrar", produces = "application/json")
-	public ResponseEntity<?> obterLancamentos(@RequestBody Lancamento objeto)
+	public ResponseEntity<?> obterLancamentos(@RequestBody Lancamento objeto) throws Exception
 	{
 	
 		lancamentoService.salvarItens(objeto);

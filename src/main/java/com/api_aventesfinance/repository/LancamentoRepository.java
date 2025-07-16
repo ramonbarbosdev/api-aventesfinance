@@ -21,4 +21,7 @@ public interface LancamentoRepository extends CrudRepository<Lancamento, Long> {
 
     // @Query(value = "SELECT CASE WHEN MAX(c.cd_centrocusto) IS NULL THEN '0' ELSE MAX(c.cd_centrocusto) END FROM CentroCusto c", nativeQuery = true)
     // Long obterSequencial();
+
+    @Query(value = "SELECT cast(1 as boolean) as fl_existe FROM Lancamento l WHERE l.cd_lancamento = ?1 AND l.dt_anomes = ?2 ")
+    Boolean obterSequencialExistente(String codigo, String dt_anomes);
 }
