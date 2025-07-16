@@ -3,6 +3,7 @@ package com.api_aventesfinance.controller;
 
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,14 +59,15 @@ public class LancamentoController  extends BaseController<Lancamento, Lancamento
 		return new ResponseEntity<>(objeto, HttpStatus.OK);
 	}
 
-	// @GetMapping(value = "/sequencia", produces = "application/json")
-	// @Operation(summary = "Gerar sequencia")
-	// public ResponseEntity<?> obterSequencia() {
-	// 	Long ultima_sequencia = objetoRepository.obterSequencial();
+	@GetMapping(value = "/sequencia", produces = "application/json")
+	@Operation(summary = "Gerar sequencia")
+	public ResponseEntity<?> obterSequencia() {
+		Long ultima_sequencia = Optional.ofNullable(objetoRepository.obterSequencial()).orElse(0L);
 
-	// 	Long sq_sequencia = ultima_sequencia + 1;
+		Long sq_sequencia = ultima_sequencia + 1;
+	    String resposta = String.format("%03d", sq_sequencia); 
 
-	// 	return new ResponseEntity<>(sq_sequencia, HttpStatus.OK);
-	// }
+		return new ResponseEntity<>(Map.of("sequencia" ,resposta), HttpStatus.OK);
+	}
 
 }
