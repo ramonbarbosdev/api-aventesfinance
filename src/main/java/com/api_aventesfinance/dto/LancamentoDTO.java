@@ -3,41 +3,34 @@ package com.api_aventesfinance.dto;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
+import java.util.List;
 
 import com.api_aventesfinance.model.ItemLancamento;
 import com.api_aventesfinance.model.Lancamento;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class LancamentoDTO {
 
     private Long id_lancamento;
-    private String cd_lacamento;
-    private OffsetDateTime dt_lancamento;
+    private String cd_lancamento;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX")
+    private LocalDateTime dt_lancamento;
     private Long id_centrocusto;
     private String dt_anomes;
     private String ds_lancamento;
     private Double vl_total;
-    // private ItemLancamento itemlancamento;
+    private List<ItemLancamentoDTO> itens;
 
-    public LancamentoDTO(Lancamento objeto) {
-        this.id_lancamento = objeto.getId_lancamento();
-        this.cd_lacamento = objeto.getCd_lancamento();
-        this.dt_lancamento = objeto.getDt_lancamento();
-        this.id_centrocusto = objeto.getId_centrocusto();
-        this.dt_anomes = objeto.getDt_anomes();
-        this.ds_lancamento = objeto.getDs_lancamento();
-        this.vl_total = objeto.getVl_total();
+    public LancamentoDTO() {}
 
-        // this.itemlancamento = (ItemLancamento) objeto.getItemlancamento();
-
+   
+    public List<ItemLancamentoDTO> getItens() {
+        return itens;
     }
 
-    // public ItemLancamento getItemlancamento() {
-    //     return itemlancamento;
-    // }
-
-    // public void setItemlancamento(ItemLancamento itemlancamento) {
-    //     this.itemlancamento = itemlancamento;
-    // }
+    public void setItens(List<ItemLancamentoDTO> itens) {
+        this.itens = itens;
+    }
 
     public Long getId_lancamento() {
         return id_lancamento;
@@ -47,19 +40,19 @@ public class LancamentoDTO {
         this.id_lancamento = id_lancamento;
     }
 
-    public String getCd_lacamento() {
-        return cd_lacamento;
+ 
+    public String getCd_lancamento() {
+        return cd_lancamento;
     }
-
-    public void setCd_lacamento(String cd_lacamento) {
-        this.cd_lacamento = cd_lacamento;
+    public void setCd_lancamento(String cd_lancamento) {
+        this.cd_lancamento = cd_lancamento;
     }
-
-    public OffsetDateTime getDt_lancamento() {
+    
+    public LocalDateTime getDt_lancamento() {
         return dt_lancamento;
     }
 
-    public void setDt_lancamento(OffsetDateTime dt_lancamento) {
+    public void setDt_lancamento(LocalDateTime dt_lancamento) {
         this.dt_lancamento = dt_lancamento;
     }
 

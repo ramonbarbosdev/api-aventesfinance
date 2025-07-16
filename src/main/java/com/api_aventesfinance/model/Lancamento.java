@@ -34,13 +34,13 @@ public class Lancamento {
 
     @NotNull(message = "A data de lançamento é obrigatória")
     @Column(unique = false, nullable = false)
-    private OffsetDateTime  dt_lancamento;
+    private OffsetDateTime dt_lancamento;
 
     @ManyToOne()
     @JoinColumn(name = "id_centrocusto", insertable = false, updatable = false)
     private CentroCusto centroCusto;
 
-    @NotNull(message = "A centro de custo é obrigatória")  
+    @NotNull(message = "A centro de custo é obrigatória")
     @Column(name = "id_centrocusto")
     private Long id_centrocusto;
 
@@ -54,16 +54,24 @@ public class Lancamento {
     @Column(unique = false, nullable = true)
     private String ds_lancamento;
 
-    //Listagem de itens
-    @OneToMany(mappedBy = "id_lancamento", cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
-    public List<ItemLancamento> itemlancamento = new ArrayList<ItemLancamento>();
+    // Listagem de itens
+    @OneToMany(mappedBy = "id_lancamento", cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+    public List<ItemLancamento> itens = new ArrayList<ItemLancamento>();
 
-    public List<ItemLancamento> getItemlancamento() {
-        return itemlancamento != null ? itemlancamento : Collections.emptyList();
+    public List<ItemLancamento> getItens() {
+        return itens;
     }
 
-    public void setItemlancamento(List<ItemLancamento> itemlancamento) {
-        this.itemlancamento = itemlancamento;
+    public void setItens(List<ItemLancamento> itens) {
+        this.itens = itens;
+    }
+
+    public CentroCusto getCentroCusto() {
+        return centroCusto;
+    }
+
+    public void setCentroCusto(CentroCusto centroCusto) {
+        this.centroCusto = centroCusto;
     }
 
     public Long getId_lancamento() {
@@ -98,14 +106,13 @@ public class Lancamento {
         this.vl_total = vl_total;
     }
 
-    public OffsetDateTime   getDt_lancamento() {
+    public OffsetDateTime getDt_lancamento() {
         return dt_lancamento;
     }
 
-    public void setDt_lancamento(OffsetDateTime  dt_lancamento) {
+    public void setDt_lancamento(OffsetDateTime dt_lancamento) {
         this.dt_lancamento = dt_lancamento;
     }
-
 
     public String getDt_anomes() {
         return dt_anomes;

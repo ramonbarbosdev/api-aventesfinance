@@ -28,11 +28,11 @@ public class LancamentoService {
         objeto.setVl_total(0.0);
      
         // validacaoCadastrar(objeto);
-        objeto = objetoRepository.save(objeto);
+        objeto = objetoRepository.save((Lancamento) objeto);
 
         Double vl_lancamento = 0.0;
 
-        List<ItemLancamento> itens = objeto.getItemlancamento();
+        List<ItemLancamento> itens = objeto.getItens();
 
         if (itens != null && itens.size() > 0) {
             for (ItemLancamento item : itens) {
