@@ -20,8 +20,11 @@ import jakarta.transaction.Transactional;
 @Transactional
 public interface ItemLancamentoRepository extends CrudRepository<ItemLancamento, Long> {
 
-    // @Query(value = "SELECT CASE WHEN MAX(c.cd_centrocusto) IS NULL THEN '0' ELSE MAX(c.cd_centrocusto) END FROM CentroCusto c", nativeQuery = true)
-    // Long obterSequencial();
+    @Query(value = "SELECT CASE WHEN MAX(c.cd_itemlancamento) IS NULL THEN '0' ELSE MAX(c.cd_itemlancamento) END FROM item_lancamento  c WHERE c.id_lancamento = ?1", nativeQuery = true)
+    Long obterSequencialById(Long id);
+
+    @Query(value = "SELECT CASE WHEN MAX(c.cd_itemlancamento) IS NULL THEN '0' ELSE MAX(c.cd_itemlancamento) END FROM item_lancamento  c ", nativeQuery = true)
+    Long obterSequencial();
 
     @Query(value = "SELECT cast(1 as boolean) as fl_existe FROM ItemLancamento i WHERE i.cd_itemlancamento = ?1 AND i.id_lancamento = ?2 ")
     Boolean obterSequencialExistente(String codigo, Long id);
