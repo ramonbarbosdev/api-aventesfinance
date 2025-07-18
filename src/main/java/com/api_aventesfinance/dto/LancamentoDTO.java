@@ -13,7 +13,6 @@ public class LancamentoDTO {
 
     private Long id_lancamento;
     private String cd_lancamento;
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX")
     private LocalDateTime dt_lancamento;
     private Long id_centrocusto;
     private String dt_anomes;
