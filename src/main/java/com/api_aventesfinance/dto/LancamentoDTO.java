@@ -1,5 +1,6 @@
 package com.api_aventesfinance.dto;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
@@ -13,7 +14,7 @@ public class LancamentoDTO {
 
     private Long id_lancamento;
     private String cd_lancamento;
-    private LocalDateTime dt_lancamento;
+    private LocalDate  dt_lancamento;
     private Long id_centrocusto;
     private String dt_anomes;
     private String ds_lancamento;
@@ -47,11 +48,11 @@ public class LancamentoDTO {
         this.cd_lancamento = cd_lancamento;
     }
     
-    public LocalDateTime getDt_lancamento() {
+    public LocalDate  getDt_lancamento() {
         return dt_lancamento;
     }
 
-    public void setDt_lancamento(LocalDateTime dt_lancamento) {
+    public void setDt_lancamento(LocalDate  dt_lancamento) {
         this.dt_lancamento = dt_lancamento;
     }
 

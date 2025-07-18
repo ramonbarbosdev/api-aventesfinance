@@ -11,6 +11,8 @@ import com.api_aventesfinance.model.Lancamento;
 import com.api_aventesfinance.repository.ItemLancamentoRepository;
 import com.api_aventesfinance.repository.LancamentoRepository;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class LancamentoService {
 
@@ -23,6 +25,7 @@ public class LancamentoService {
     // @Autowired
     // private ItemLancamentoService itemObjetoService;
 
+    @Transactional
     public Lancamento salvarItens(Lancamento objeto) throws Exception {
 
         objeto.setVl_total(0.0);
@@ -50,9 +53,21 @@ public class LancamentoService {
         return objeto;
     }
 
+
+
+      public Long excluir(Long id)
+    {
+        // itemObjetoRepository.deleteByIdLancamento( id);
+        // objetoRepository.deleteById(id);
+
+        return id;
+    }
+
+
     public void validarSequencial(Long id_lancamento, String cd_lancamento, String dt_anomes) throws Exception {
 
-        if(id_lancamento != null) return;
+        if (id_lancamento != null)
+            return;
         Boolean fl_existe = repository.obterSequencialExistente(cd_lancamento, dt_anomes);
 
         if (fl_existe != null && fl_existe) {
@@ -71,11 +86,14 @@ public class LancamentoService {
 
     public void validarCodigoSequencialItem(ItemLancamento item, List<ItemLancamento> listaItens, Long id_lancamento)
             throws Exception {
-        String codigo = item.getCd_itemlancamento();
-        Boolean fl_existe = itemObjetoRepository.obterSequencialExistente(codigo, id_lancamento);
 
-        if (fl_existe != null && fl_existe) {
-            throw new Exception("Codigo sequencial do item está repetindo.");
+        if (id_lancamento == null) {
+            String codigo = item.getCd_itemlancamento();
+            Boolean fl_existe = itemObjetoRepository.obterSequencialExistente(codigo, id_lancamento);
+
+            if (fl_existe != null && fl_existe) {
+                throw new Exception("Codigo sequencial do item está repetindo.");
+            }
         }
 
     }

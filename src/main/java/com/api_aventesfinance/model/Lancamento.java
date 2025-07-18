@@ -1,5 +1,6 @@
 package com.api_aventesfinance.model;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ public class Lancamento {
 
     @NotNull(message = "A data de lançamento é obrigatória")
     @Column(unique = false, nullable = false)
-    private LocalDateTime dt_lancamento;
+    private LocalDate  dt_lancamento;
 
     @ManyToOne()
     @JoinColumn(name = "id_centrocusto", insertable = false, updatable = false)
@@ -106,11 +107,11 @@ public class Lancamento {
         this.vl_total = vl_total;
     }
 
-    public LocalDateTime getDt_lancamento() {
+    public LocalDate  getDt_lancamento() {
         return dt_lancamento;
     }
 
-    public void setDt_lancamento(LocalDateTime dt_lancamento) {
+    public void setDt_lancamento(LocalDate  dt_lancamento) {
         this.dt_lancamento = dt_lancamento;
     }
 

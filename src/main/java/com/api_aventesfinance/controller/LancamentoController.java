@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -52,7 +53,7 @@ public class LancamentoController extends BaseController<Lancamento, LancamentoD
 	}
 
 	@PostMapping(value = "/cadastrar", produces = "application/json")
-	public ResponseEntity<?> obterLancamentos(@RequestBody Lancamento objeto) throws Exception {
+	public ResponseEntity<?> cadastrarLanc(@RequestBody Lancamento objeto) throws Exception {
 
 		lancamentoService.salvarItens(objeto);
 		return new ResponseEntity<>(objeto, HttpStatus.OK);
