@@ -1,14 +1,18 @@
 package com.api_aventesfinance.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.api_aventesfinance.dto.LancamentoDTO;
+import com.api_aventesfinance.enums.TipoCategoria;
+import com.api_aventesfinance.model.Categoria;
 import com.api_aventesfinance.model.ItemLancamento;
 import com.api_aventesfinance.model.Lancamento;
+import com.api_aventesfinance.repository.CategoriaRepository;
 import com.api_aventesfinance.repository.ItemLancamentoRepository;
 import com.api_aventesfinance.repository.LancamentoRepository;
 
@@ -20,6 +24,9 @@ public class LancamentoService {
 
     @Autowired
     private ItemLancamentoRepository itemObjetoRepository;
+
+    @Autowired
+    private CategoriaRepository categoriaRepository;
 
     // @Autowired
     // private ItemLancamentoService itemObjetoService;
@@ -143,20 +150,17 @@ public class LancamentoService {
     }
 
     public void validarCategoria(ItemLancamento item, List<ItemLancamento> listaItens, Long id_lancamento)
-            throws RuntimeException {
-        // Long id_categoria = item.getId_categoria();
-        // Long id_tipooperacao = item.getId_tipooperacao();
+            throws Exception {
 
-        // if(id_tipooperacao != 1) //diferente de saldo inicial
-        // {
-        // Boolean fl_existeCategoria =
-        // categoriaRepository.existeCategoria(id_categoria);
+        Long id_categoriaList =  listaItens.get(0).getId_categoria(); // pega a primeira posicao
+        Optional<Categoria> categorialist = categoriaRepository.findById(id_categoriaList);
+        TipoCategoria tp_categorialist = categorialist.get().getTp_categoria();
 
-        // if(fl_existeCategoria == null || !fl_existeCategoria)
-        // {
-        // throw new RuntimeException("Categoria não encontrada");
-        // }
-        // }
+        if( tp_categorialist.equals(TipoCategoria.DESPESA) )
+        {
+            throw new Exception("Não é possivel criar uma despesa sem ter receita no lançamento.");
+        }
+    
     }
 
 }
