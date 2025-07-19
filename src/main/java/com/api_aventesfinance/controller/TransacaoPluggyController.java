@@ -52,9 +52,10 @@ public class TransacaoPluggyController {
 
 	// TRANSACOES
 
-	@GetMapping(value = "/{accountId}/{apiKey}/{pageSize}/{page}")
-	public ResponseEntity<?> obterTodasTransacao(@PathVariable String accountId, @PathVariable String apiKey,@PathVariable Integer pageSize,@PathVariable Integer page) {
+	@GetMapping(value = "/{apiKey}/{pageSize}/{page}")
+	public ResponseEntity<?> obterTodasTransacao( @PathVariable String apiKey,@PathVariable Integer pageSize,@PathVariable Integer page) {
 
+		String accountId = "";
 		Optional<ItemPluggy> mainAtual = itemPluggyRepository.findByFlMainTrue();
 		if (mainAtual.isPresent()) {
 
@@ -75,7 +76,6 @@ public class TransacaoPluggyController {
 			if(pageSize != null) params = params +"&pageSize="+pageSize;
 			if(page != null) params = params +"&page="+page;
 
-			System.out.println(params);
 
 			String url = "https://api.pluggy.ai/transactions" + params;
 
