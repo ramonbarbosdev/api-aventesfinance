@@ -37,7 +37,7 @@ public class LancamentoService {
         objeto.setVl_total(0.0);
         Double vl_lancamento = 0.0;
 
-        validarSequencial(objeto.getId_lancamento(), objeto.getCd_lancamento(), objeto.getDt_anomes());
+        validarObjeto(objeto);
         List<ItemLancamento> itens = objeto.getItens();
         objeto.setItens(null);
 
@@ -48,6 +48,10 @@ public class LancamentoService {
         if (itens != null && itens.size() > 0) {
             for (ItemLancamento item : itens) {
                 item.setId_lancamento(objeto.getId_lancamento());
+
+                if (item.getId_itemlancamento() == null || item.getId_itemlancamento() == 0) {
+                    item.setId_itemlancamento(null); // Força o Hibernate a tratar como novo
+                }
 
                 validacaoCadastrar(item, itens, objeto.getId_lancamento());
                 item = itemObjetoRepository.save(item);
@@ -63,10 +67,8 @@ public class LancamentoService {
         return objeto;
     }
 
-    public void removerItens(Lancamento objeto, List<ItemLancamento> itensAtualizados )
-            {
+    public void removerItens(Lancamento objeto, List<ItemLancamento> itensAtualizados) {
         List<ItemLancamento> itensPersistidos = itemObjetoRepository.findbyIdItemLancamento(objeto.getId_lancamento());
-
 
         for (ItemLancamento itemPersistido : itensPersistidos) {
             boolean aindaExiste = itensAtualizados.stream()
@@ -83,13 +85,25 @@ public class LancamentoService {
 
     public Long excluir(Long id) {
 
-        itemObjetoRepository.deleteByIdLancamento( id);
+        itemObjetoRepository.deleteByIdLancamento(id);
         repository.deleteById(id);
 
         return id;
     }
 
-    public void validarSequencial(Long id_lancamento, String cd_lancamento, String dt_anomes) throws Exception {
+    public void validarObjeto(Lancamento objeto) throws Exception {
+
+        validarSequencia(objeto.getId_lancamento(), objeto.getCd_lancamento(), objeto.getDt_anomes());
+
+        Boolean fl_existe = repository.existeLancamentoPorCentroCustoMes(objeto.getDt_anomes(),
+                objeto.getId_centrocusto(), objeto.getId_lancamento());
+
+        if (fl_existe != null && fl_existe) {
+            throw new Exception("Já existe um lançamento no mês com o centro de custo informado.");
+        }
+    }
+
+    public void validarSequencia(Long id_lancamento, String cd_lancamento, String dt_anomes) throws Exception {
 
         if (id_lancamento != null)
             return;
@@ -152,15 +166,14 @@ public class LancamentoService {
     public void validarCategoria(ItemLancamento item, List<ItemLancamento> listaItens, Long id_lancamento)
             throws Exception {
 
-        Long id_categoriaList =  listaItens.get(0).getId_categoria(); // pega a primeira posicao
+        Long id_categoriaList = listaItens.get(0).getId_categoria(); // pega a primeira posicao
         Optional<Categoria> categorialist = categoriaRepository.findById(id_categoriaList);
         TipoCategoria tp_categorialist = categorialist.get().getTp_categoria();
 
-        if( tp_categorialist.equals(TipoCategoria.DESPESA) )
-        {
-            throw new Exception("Não é possivel criar uma despesa sem ter receita no lançamento.");
+        if (tp_categorialist.equals(TipoCategoria.DESPESA)) {
+            throw new Exception("Não é possivel ter despesas sem ter receitas no lançamento.");
         }
-    
+
     }
 
 }

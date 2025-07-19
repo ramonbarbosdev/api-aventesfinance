@@ -24,4 +24,14 @@ public interface LancamentoRepository extends CrudRepository<Lancamento, Long> {
 
     @Query(value = "SELECT cast(1 as boolean) as fl_existe FROM Lancamento l WHERE l.cd_lancamento = ?1 AND l.dt_anomes = ?2 ")
     Boolean obterSequencialExistente(String codigo, String dt_anomes);
+
+    @Query(value = """
+                SELECT cast(1 as boolean)
+                FROM lancamento l
+                WHERE l.dt_anomes = ?1
+                  AND l.id_centrocusto = ?2
+                  AND (:idLancamento IS NULL OR l.id_lancamento <> :idLancamento)
+            """, nativeQuery = true)
+    Boolean existeLancamentoPorCentroCustoMes(String dt_anomes, Long id_centrocusto, Long idLancamento);
+
 }
