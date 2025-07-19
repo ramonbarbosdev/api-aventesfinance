@@ -4,14 +4,13 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.api_aventesfinance.dto.LancamentoDTO;
 import com.api_aventesfinance.model.ItemLancamento;
 import com.api_aventesfinance.model.Lancamento;
 import com.api_aventesfinance.repository.ItemLancamentoRepository;
 import com.api_aventesfinance.repository.LancamentoRepository;
-
-import jakarta.transaction.Transactional;
 
 @Service
 public class LancamentoService {
@@ -25,17 +24,18 @@ public class LancamentoService {
     // @Autowired
     // private ItemLancamentoService itemObjetoService;
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public Lancamento salvarItens(Lancamento objeto) throws Exception {
 
         objeto.setVl_total(0.0);
 
         validarSequencial(objeto.getId_lancamento(), objeto.getCd_lancamento(), objeto.getDt_anomes());
         objeto = repository.save(objeto);
-
         Double vl_lancamento = 0.0;
 
         List<ItemLancamento> itens = objeto.getItens();
+
+        removerItens(objeto,itens );
 
         if (itens != null && itens.size() > 0) {
             for (ItemLancamento item : itens) {
@@ -53,16 +53,26 @@ public class LancamentoService {
         return objeto;
     }
 
+    public void removerItens(Lancamento objeto, List<ItemLancamento> itensAtualizados) {
+        List<ItemLancamento> itensPersistidos = itemObjetoRepository.findbyIdItemLancamento(objeto.getId_lancamento());
 
+        for (ItemLancamento itemPersistido : itensPersistidos) {
+            boolean aindaExiste = itensAtualizados.stream()
+                    .anyMatch(i -> i.getId_itemlancamento() != null
+                            && i.getId_itemlancamento().equals(itemPersistido.getId_itemlancamento()));
 
-      public Long excluir(Long id)
-    {
+            if (!aindaExiste) {
+                itemObjetoRepository.delete(itemPersistido);
+            }
+        }
+    }
+
+    public Long excluir(Long id) {
         // itemObjetoRepository.deleteByIdLancamento( id);
         // objetoRepository.deleteById(id);
 
         return id;
     }
-
 
     public void validarSequencial(Long id_lancamento, String cd_lancamento, String dt_anomes) throws Exception {
 

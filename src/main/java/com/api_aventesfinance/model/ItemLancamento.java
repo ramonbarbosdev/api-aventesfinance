@@ -45,6 +45,14 @@ public class ItemLancamento {
     @Column(unique = false, nullable = false)
     private Double vl_itemlancamento;
 
+    public Categoria getCategoria() {
+        return categoria;
+    }
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
+    }
+    
+
     public Long getId_itemlancamento() {
         return id_itemlancamento;
     }

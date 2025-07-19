@@ -28,6 +28,9 @@ public interface ItemLancamentoRepository extends CrudRepository<ItemLancamento,
 
     @Query(value = "SELECT cast(1 as boolean) as fl_existe FROM ItemLancamento i WHERE i.cd_itemlancamento = ?1 AND i.id_lancamento = ?2 ")
     Boolean obterSequencialExistente(String codigo, Long id);
+
+    @Query(value = "SELECT * FROM item_lancamento l WHERE l.id_lancamento = ?1", nativeQuery = true)
+    List<ItemLancamento> findbyIdItemLancamento(Long id);
    
 
 }
