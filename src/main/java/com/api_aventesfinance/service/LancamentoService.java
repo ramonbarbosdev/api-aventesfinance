@@ -28,18 +28,20 @@ public class LancamentoService {
     public Lancamento salvarItens(Lancamento objeto) throws Exception {
 
         objeto.setVl_total(0.0);
-
-        validarSequencial(objeto.getId_lancamento(), objeto.getCd_lancamento(), objeto.getDt_anomes());
-        objeto = repository.save(objeto);
         Double vl_lancamento = 0.0;
 
+        validarSequencial(objeto.getId_lancamento(), objeto.getCd_lancamento(), objeto.getDt_anomes());
         List<ItemLancamento> itens = objeto.getItens();
+        objeto.setItens(null);
 
-        removerItens(objeto,itens );
+        objeto = repository.save(objeto);
+
+        removerItens(objeto, itens);
 
         if (itens != null && itens.size() > 0) {
             for (ItemLancamento item : itens) {
                 item.setId_lancamento(objeto.getId_lancamento());
+
                 validacaoCadastrar(item, itens, objeto.getId_lancamento());
                 item = itemObjetoRepository.save(item);
                 vl_lancamento += item.getVl_itemlancamento();
@@ -48,13 +50,16 @@ public class LancamentoService {
 
         objeto.setVl_total(vl_lancamento);
         validarValorTotalItem(itens, vl_lancamento);
+        objeto.setItens(itens);
         objeto = repository.save(objeto);
 
         return objeto;
     }
 
-    public void removerItens(Lancamento objeto, List<ItemLancamento> itensAtualizados) {
+    public void removerItens(Lancamento objeto, List<ItemLancamento> itensAtualizados )
+            {
         List<ItemLancamento> itensPersistidos = itemObjetoRepository.findbyIdItemLancamento(objeto.getId_lancamento());
+
 
         for (ItemLancamento itemPersistido : itensPersistidos) {
             boolean aindaExiste = itensAtualizados.stream()
@@ -62,7 +67,9 @@ public class LancamentoService {
                             && i.getId_itemlancamento().equals(itemPersistido.getId_itemlancamento()));
 
             if (!aindaExiste) {
-                itemObjetoRepository.delete(itemPersistido);
+                if (itemPersistido.getId_itemlancamento() != null && itemPersistido.getId_itemlancamento() > 0) {
+                    itemObjetoRepository.deleteById(itemPersistido.getId_itemlancamento());
+                }
             }
         }
     }

@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -18,7 +19,8 @@ import jakarta.validation.constraints.NotNull;
 public class ItemLancamento {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_itemlancamento")
+    @SequenceGenerator(name = "seq_itemlancamento", sequenceName = "seq_itemlancamento", allocationSize = 1)
     private Long id_itemlancamento;
 
     @ManyToOne()
@@ -48,10 +50,10 @@ public class ItemLancamento {
     public Categoria getCategoria() {
         return categoria;
     }
+
     public void setCategoria(Categoria categoria) {
         this.categoria = categoria;
     }
-    
 
     public Long getId_itemlancamento() {
         return id_itemlancamento;
