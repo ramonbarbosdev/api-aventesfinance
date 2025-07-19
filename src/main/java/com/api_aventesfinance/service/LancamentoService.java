@@ -95,10 +95,12 @@ public class LancamentoService {
 
         validarSequencia(objeto.getId_lancamento(), objeto.getCd_lancamento(), objeto.getDt_anomes());
 
-        Boolean fl_existe = repository.existeLancamentoPorCentroCustoMes(objeto.getDt_anomes(),
-                objeto.getId_centrocusto(), objeto.getId_lancamento());
+        Optional<Lancamento> fl_existe = repository.existeLancamentoPorCentroCustoMes(
+                objeto.getDt_anomes(),
+                objeto.getId_centrocusto(),
+                objeto.getId_lancamento());
 
-        if (fl_existe != null && fl_existe) {
+        if (fl_existe.isPresent()) {
             throw new Exception("Já existe um lançamento no mês com o centro de custo informado.");
         }
     }

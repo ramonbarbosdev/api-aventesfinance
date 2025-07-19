@@ -1,6 +1,7 @@
 package com.api_aventesfinance.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -26,12 +27,12 @@ public interface LancamentoRepository extends CrudRepository<Lancamento, Long> {
     Boolean obterSequencialExistente(String codigo, String dt_anomes);
 
     @Query(value = """
-                SELECT cast(1 as boolean)
+                SELECT *
                 FROM lancamento l
                 WHERE l.dt_anomes = ?1
                   AND l.id_centrocusto = ?2
                   AND (:idLancamento IS NULL OR l.id_lancamento <> :idLancamento)
             """, nativeQuery = true)
-    Boolean existeLancamentoPorCentroCustoMes(String dt_anomes, Long id_centrocusto, Long idLancamento);
+    Optional<Lancamento> existeLancamentoPorCentroCustoMes(String dt_anomes, Long id_centrocusto, Long idLancamento);
 
 }

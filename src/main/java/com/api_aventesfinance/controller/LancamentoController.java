@@ -33,6 +33,8 @@ import com.api_aventesfinance.service.LancamentoService;
 import io.swagger.v3.oas.annotations.Operation;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequestMapping(value = "/lancamento", produces = "application/json")
@@ -58,6 +60,15 @@ public class LancamentoController extends BaseController<Lancamento, LancamentoD
 		lancamentoService.salvarItens(objeto);
 		return new ResponseEntity<>(objeto, HttpStatus.OK);
 	}
+
+	@GetMapping(value = "/lancamento-existente/{id_centrocusto}/{dt_anomes}",  produces = "application/json")
+	public ResponseEntity<?> obterLancamentoExistente(@PathVariable Long id_centrocusto , @PathVariable String dt_anomes) {
+
+		Optional<Lancamento> objeto = objetoRepository.existeLancamentoPorCentroCustoMes(dt_anomes,
+                id_centrocusto, null);
+		return new ResponseEntity<>(objeto, HttpStatus.OK);
+	}
+	
 
 	@DeleteMapping(value = "/deletar/{id}", produces = "application/json")
 	public ResponseEntity<?> deletar(@PathVariable Long id) {
