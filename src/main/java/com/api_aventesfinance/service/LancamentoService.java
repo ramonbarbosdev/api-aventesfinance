@@ -75,8 +75,9 @@ public class LancamentoService {
     }
 
     public Long excluir(Long id) {
-        // itemObjetoRepository.deleteByIdLancamento( id);
-        // objetoRepository.deleteById(id);
+
+        itemObjetoRepository.deleteByIdLancamento( id);
+        repository.deleteById(id);
 
         return id;
     }

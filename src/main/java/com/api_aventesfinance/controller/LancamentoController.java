@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -59,6 +59,15 @@ public class LancamentoController extends BaseController<Lancamento, LancamentoD
 		return new ResponseEntity<>(objeto, HttpStatus.OK);
 	}
 
+	@DeleteMapping(value = "/deletar/{id}", produces = "application/json")
+	public ResponseEntity<?> deletar(@PathVariable Long id) {
+
+
+		lancamentoService.excluir(id);
+		return new ResponseEntity<>(Map.of("message", "Deletado com sucesso!"), HttpStatus.OK);
+
+	}
+
 	@GetMapping(value = "/sequencia", produces = "application/json")
 	@Operation(summary = "Gerar sequencia")
 	public ResponseEntity<?> obterSequencia() {
@@ -77,7 +86,8 @@ public class LancamentoController extends BaseController<Lancamento, LancamentoD
 		Long ultima_sequencia;
 
 		if (id != 0) {
-			ultima_sequencia = Optional.ofNullable(itemLancamentoRepository.obterSequencialById(Long.valueOf(id))).orElse(0L);
+			ultima_sequencia = Optional.ofNullable(itemLancamentoRepository.obterSequencialById(Long.valueOf(id)))
+					.orElse(0L);
 
 		} else {
 			ultima_sequencia = (long) 0;

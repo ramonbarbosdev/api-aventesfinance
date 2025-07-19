@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.api_aventesfinance.model.Categoria;
 import com.api_aventesfinance.model.CentroCusto;
@@ -14,7 +15,6 @@ import com.api_aventesfinance.model.ItemLancamento;
 import com.api_aventesfinance.model.Lancamento;
 import com.api_aventesfinance.model.Usuario;
 
-import jakarta.transaction.Transactional;
 
 @Repository
 @Transactional
@@ -31,6 +31,10 @@ public interface ItemLancamentoRepository extends CrudRepository<ItemLancamento,
 
     @Query(value = "SELECT * FROM item_lancamento l WHERE l.id_lancamento = ?1", nativeQuery = true)
     List<ItemLancamento> findbyIdItemLancamento(Long id);
+
+    @Modifying
+    @Query(value = "DELETE FROM item_lancamento  WHERE id_lancamento = ?1 ",  nativeQuery = true)
+    void deleteByIdLancamento(Long id);
    
 
 }
