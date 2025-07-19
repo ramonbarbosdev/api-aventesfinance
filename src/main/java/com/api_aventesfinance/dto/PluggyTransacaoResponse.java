@@ -1,6 +1,6 @@
 package com.api_aventesfinance.dto;
 
-import java.time.OffsetDateTime;
+
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -15,9 +15,11 @@ public class PluggyTransacaoResponse {
     private String accountId;
     private String type;
 
+
     public PluggyTransacaoResponse() {
     }
 
+   
     public String getAccountId() {
         return accountId;
     }
@@ -73,3 +75,5 @@ public class PluggyTransacaoResponse {
     }
 
 }
+
+

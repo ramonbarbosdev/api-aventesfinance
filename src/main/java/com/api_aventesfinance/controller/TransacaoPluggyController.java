@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import com.api_aventesfinance.dto.PluggyPaginacaoResponse;
 import com.api_aventesfinance.dto.PluggyTransacaoResponse;
 import com.api_aventesfinance.model.ItemPluggy;
 import com.api_aventesfinance.repository.ItemPluggyRepository;
@@ -43,7 +44,6 @@ public class TransacaoPluggyController {
 	@GetMapping(value = "/conta/{id_item}/{apiKey}")
 	public ResponseEntity<?> obterConta(@PathVariable String id_item, @PathVariable String apiKey) {
 
-		
 		ResponseEntity<Map> response = pluggyService.obterConta(apiKey, id_item);
 
 		return new ResponseEntity<>(response.getBody(), HttpStatus.OK);
@@ -52,26 +52,32 @@ public class TransacaoPluggyController {
 
 	// TRANSACOES
 
-	@GetMapping(value = "/{accountId}/{apiKey}")
-	public ResponseEntity<?> obterTodasTransacao(@PathVariable String accountId, @PathVariable String apiKey) {
+	@GetMapping(value = "/{accountId}/{apiKey}/{pageSize}/{page}")
+	public ResponseEntity<?> obterTodasTransacao(@PathVariable String accountId, @PathVariable String apiKey,@PathVariable Integer pageSize,@PathVariable Integer page) {
 
 		Optional<ItemPluggy> mainAtual = itemPluggyRepository.findByFlMainTrue();
 		if (mainAtual.isPresent()) {
 
 			ResponseEntity<Map> responseConta = pluggyService.obterConta(apiKey, mainAtual.get().getId_item());
-			
+
 			Object resultsConta = responseConta.getBody().get("results");
 
 			List<Map<String, Object>> resultList = (List<Map<String, Object>>) resultsConta;
 
-			// 0 - credito, 1 -  banco
+			// 0 - credito, 1 - banco
 
-			if(resultList.get(1).get("id") != null  )
-			{
+			if (resultList.get(1).get("id") != null) {
 				accountId = (String) resultList.get(0).get("id");
 			}
+			
+			String params = "";
+			if(accountId != null) params = "?accountId=" +accountId;
+			if(pageSize != null) params = params +"&pageSize="+pageSize;
+			if(page != null) params = params +"&page="+page;
 
-			String url = "https://api.pluggy.ai/transactions?accountId=" + accountId;
+			System.out.println(params);
+
+			String url = "https://api.pluggy.ai/transactions" + params;
 
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("X-API-KEY", apiKey);
@@ -81,18 +87,18 @@ public class TransacaoPluggyController {
 
 			ResponseEntity<Map> response = new RestTemplate().exchange(url, HttpMethod.GET, entity, Map.class);
 
-			Object results = response.getBody().get("results");
 			ObjectMapper mapper = new ObjectMapper();
-			List<PluggyTransacaoResponse> transacoes = mapper.convertValue(
-					results,
-					new TypeReference<List<PluggyTransacaoResponse>>() {
-					});
 
-			return new ResponseEntity<>(transacoes, HttpStatus.OK);
+			Map<String, Object> responseBody = response.getBody();
+
+			PluggyPaginacaoResponse paginacao = mapper.convertValue(
+					responseBody,
+					PluggyPaginacaoResponse.class);
+
+			return new ResponseEntity<>(paginacao, HttpStatus.OK);
 		}
 
-        return ResponseEntity.ok(Map.of("message", "Conta principal nao definida!"));
-
+		return ResponseEntity.ok(Map.of("message", "Conta principal nao definida!"));
 
 	}
 
