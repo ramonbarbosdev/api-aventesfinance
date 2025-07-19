@@ -28,8 +28,8 @@ public class LancamentoService {
     @Autowired
     private CategoriaRepository categoriaRepository;
 
-    // @Autowired
-    // private ItemLancamentoService itemObjetoService;
+    @Autowired
+    private MovimentacaoLancamentoService movimentacaoService;
 
     @Transactional(rollbackFor = Exception.class)
     public Lancamento salvarItens(Lancamento objeto) throws Exception {
@@ -63,6 +63,8 @@ public class LancamentoService {
         validarValorTotalItem(itens, vl_lancamento);
         objeto.setItens(itens);
         objeto = repository.save(objeto);
+
+        movimentacaoService.atualizarMovimentacaoLancamento(objeto.getId_lancamento());
 
         return objeto;
     }
