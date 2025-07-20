@@ -41,7 +41,7 @@ jobs:
       - name: Enviar JAR via FTP
         uses: SamKirkland/FTP-Deploy-Action@4.0.0
         with:
-          server: ${{ secrets.HOST }}
+          server: ramoncode.com
           username: ${{ secrets.USUARIOCPANEL }}
           password: ${{ secrets.SENHACPANEL }}
           local-dir: ./jar-upload/
