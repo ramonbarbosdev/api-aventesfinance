@@ -73,13 +73,6 @@ public class MovimentacaoLancamento {
         this.id_lancamento = id_lancamento;
     }
 
-    public LocalDate getdt_movimento() {
-        return dt_movimento;
-    }
-
-    public void setdt_movimento(LocalDate dt_movimento) {
-        this.dt_movimento = dt_movimento;
-    }
 
     public CentroCusto getCentroCusto() {
         return centroCusto;
@@ -128,5 +121,19 @@ public class MovimentacaoLancamento {
     public void setVl_saldo(Double vl_saldo) {
         this.vl_saldo = vl_saldo;
     }
+
+    public String getDt_anomes() {
+        return dt_anomes;
+    }
+    public void setDt_anomes(String dt_anomes) {
+        this.dt_anomes = dt_anomes;
+    }
+    public LocalDate getDt_movimento() {
+        return dt_movimento;
+    }
+    public void setDt_movimento(LocalDate dt_movimento) {
+        this.dt_movimento = dt_movimento;
+    }
+
 
 }
