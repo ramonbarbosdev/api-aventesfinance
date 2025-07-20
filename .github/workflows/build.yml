@@ -47,7 +47,7 @@ jobs:
           username: ${{ secrets.USUARIOCPANEL }}
           password: ${{ secrets.SENHACPANEL }}
           local-dir: ./jar-upload/
-          server-dir: ~/avantes.ramoncode.com/cgi-bin/
+          server-dir: ~/appservers/standalone/
 
       - name: Instalar cliente SSH
         run: sudo apt-get install openssh-client sshpass expect
