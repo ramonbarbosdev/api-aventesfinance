@@ -1,88 +1,89 @@
-# -------------------------------------------------------------
-# GitHub Actions – Maven Build & FTP Deploy
-# -------------------------------------------------------------
-# • Compila o projeto Spring Boot (JDK 20) com Maven (skip tests)
-# • Renomeia o artefato JAR para "app-avantes.jar"
-# • Faz upload via FTP para o cPanel
-# • Reinicia a aplicação remotamente via SSH (Expect)
-# -------------------------------------------------------------
-
-name: Maven Build & FTP Deploy
+name: Maven Deploy
 
 on:
   push:
     branches:
-      - main          # Executa apenas quando houver push na branch main
-
-# Variáveis reutilizadas em vários passos (evita repetição)
-env:
-  JAR_FINAL_NAME: app-avantes.jar      # Nome final do JAR no servidor
-  REMOTE_DEPLOY_DIR: ~/appservers/standalone   # Pasta de destino no host
+      - main  
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
 
+    outputs:
+      jar_name: ${{ steps.set_jar_name.outputs.jar_name }}
+
     steps:
-      # 1) Checkout do código‑fonte
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Checkout do código
+        uses: actions/checkout@v2
 
-      # 2) Configura JDK 20 (Temurin)
-      - name: Set up JDK 20
-        uses: actions/setup-java@v4
+      - name: Definir versão do JDK
+        uses: actions/setup-java@v2
         with:
-          distribution: 'temurin'
-          java-version: '20'
+          java-version: '20'  
+          distribution: 'adopt'
 
-      # 3) Build Maven (sem rodar testes)
-      - name: Build with Maven (skip tests)
-        run: mvn -B clean package -DskipTests
+      - name: Build com Maven
+        run: mvn -B package -DskipTests --file pom.xml
 
-      # 4) Copia e renomeia o JAR gerado para pasta de upload
-      - name: Prepare JAR for upload
+      - name: Criar diretório para build do JAR
+        run: mkdir ./jar-upload
+
+      - name: Copiar e renomear o JAR
         run: |
-          mkdir -p jar-upload
-          ORIGINAL_JAR=$(ls target/*.jar | head -n 1)
-          echo "Original JAR encontrado: $ORIGINAL_JAR"
-          cp "$ORIGINAL_JAR" "jar-upload/${{ env.JAR_FINAL_NAME }}"
+          ORIGINAL_JAR=$(ls ./target/*.jar | head -n 1)
+          cp "$ORIGINAL_JAR" ./jar-upload/api-avantesfinance.jar
 
-      # 5) Upload via FTP (Sam Kirkland)
-      - name: Deploy via FTP
+      - name: Definir nome do JAR (sem extensão)
+        id: set_jar_name
+        run: echo "::set-output name=jar_name::$(basename $(ls ./jar-upload/*.jar) .jar)"
+
+      - name: Debug - Exibir nome do JAR
+        run: echo "O nome do arquivo JAR é ${{ steps.set_jar_name.outputs.jar_name }}"
+
+      - name: Enviar JAR via FTP
         uses: SamKirkland/FTP-Deploy-Action@4.0.0
         with:
-          server: ${{ secrets.HOST }}           # "ftp.seudominio.com" (sem http://)
+          server: ${{ secrets.HOST }}   
           username: ${{ secrets.USUARIOCPANEL }}
           password: ${{ secrets.SENHACPANEL }}
-          local-dir: ./jar-upload               # Diretório local com app-avantes.jar
-          server-dir: ${{ env.REMOTE_DEPLOY_DIR }}
-          # dangerous-clean-slate: true         # (opcional) limpa o dir remoto antes
+          local-dir: ./jar-upload/
+          server-dir: ~/appservers/standalone/
 
-      # 6) Instala utilitários SSH (sshpass + expect)
-      - name: Install SSH utilities
-        run: sudo apt-get update && sudo apt-get install -y openssh-client sshpass expect
+      - name: Instalar cliente SSH
+        run: sudo apt-get install openssh-client sshpass expect
 
-      # 7) Reinicia a aplicação remotamente
-      - name: Restart remote application
+      - name: Parar aplicação Spring Boot remotamente
         env:
-          SSH_USER: ${{ secrets.USUARIOCPANEL }}
+          USUARIOCPANEL: ${{ secrets.USUARIOCPANEL }}
           HOST: ${{ secrets.HOST }}
-          SSH_PASS: ${{ secrets.SENHACPANEL }}
-          REMOTE_DEPLOY_DIR: ${{ env.REMOTE_DEPLOY_DIR }}
-          JAR_FINAL_NAME: ${{ env.JAR_FINAL_NAME }}
+          SENHACPANEL: ${{ secrets.SENHACPANEL }}
         run: |
           expect -c "
-          set timeout 60
-          spawn ssh -o StrictHostKeyChecking=no $env(SSH_USER)@$env(HOST)
+          set timeout 20
+          spawn ssh -o StrictHostKeyChecking=no $USUARIOCPANEL@$HOST
           expect \"password:\"
-          send \"$env(SSH_PASS)\r\"
-          expect \"$ \"
-          # --- Para processo existente (caso haja) ---
-          send \"pkill -f $env(JAR_FINAL_NAME)\r\"
-          expect \"$ \"
-          # --- Inicia nova instância em segundo plano ---
-          send \"nohup java -jar $env(REMOTE_DEPLOY_DIR)/$env(JAR_FINAL_NAME) > $env(REMOTE_DEPLOY_DIR)/app-avantes.out 2>&1 &\r\"
-          expect \"$ \"
+          send \"$SENHACPANEL\r\"
+          expect \"\$ \"
+          send \"bash appservers/tmp/${{ steps.set_jar_name.outputs.jar_name }}.sh stop\r\"
+          expect \"\$ \"
+          send \"exit\r\"
+          expect eof
+          "
+
+      - name: Iniciar aplicação Spring Boot remotamente
+        env:
+          USUARIOCPANEL: ${{ secrets.USUARIOCPANEL }}
+          HOST: ${{ secrets.HOST }}
+          SENHACPANEL: ${{ secrets.SENHACPANEL }}
+        run: |
+          expect -c "
+          set timeout 20
+          spawn ssh -o StrictHostKeyChecking=no $USUARIOCPANEL@$HOST
+          expect \"password:\"
+          send \"$SENHACPANEL\r\"
+          expect \"\$ \"
+          send \"bash appservers/tmp/${{ steps.set_jar_name.outputs.jar_name }}.sh start\r\"
+          expect \"\$ \"
           send \"exit\r\"
           expect eof
           "
