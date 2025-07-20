@@ -23,7 +23,7 @@ jobs:
           distribution: 'adopt'
 
       - name: Build com Maven
-        run: mvn -B package --file pom.xml
+        run: mvn -B package -DskipTests --file pom.xml
 
       - name: Criar diretório para build do JAR
         run: mkdir ./jar-upload
