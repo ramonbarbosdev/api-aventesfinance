@@ -18,4 +18,8 @@ import jakarta.transaction.Transactional;
 @Transactional
 public interface MovimentacaoLancamentoRepository extends CrudRepository<MovimentacaoLancamento, Long> {
 
+    @Modifying
+    @Query(value= "DELETE FROM movimentacao_lancamento WHERE id_lancamento = :id", nativeQuery = true )
+    void deleteByIdLancamento(Long id);
+
 }

@@ -1,5 +1,6 @@
 package com.api_aventesfinance.model;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
@@ -31,6 +32,9 @@ public class ItemLancamento {
     @Column(name = "id_lancamento")
     private Long id_lancamento;
 
+    @Column(name = "dt_itemlancamento")
+    private LocalDate dt_itemlancamento;
+
     @NotBlank(message = "O codigo é obrigatorio!")
     @Column(unique = false, nullable = false)
     private String cd_itemlancamento;
@@ -46,6 +50,14 @@ public class ItemLancamento {
     @NotNull(message = "O valor é obrigatorio!")
     @Column(unique = false, nullable = false)
     private Double vl_itemlancamento;
+
+    public LocalDate getDt_itemlancamento() {
+        return dt_itemlancamento;
+    }
+    public void setDt_itemlancamento(LocalDate dt_itemlancamento) {
+        this.dt_itemlancamento = dt_itemlancamento;
+    }
+
 
     public Categoria getCategoria() {
         return categoria;

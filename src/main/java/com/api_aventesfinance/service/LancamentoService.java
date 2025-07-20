@@ -15,6 +15,7 @@ import com.api_aventesfinance.model.Lancamento;
 import com.api_aventesfinance.repository.CategoriaRepository;
 import com.api_aventesfinance.repository.ItemLancamentoRepository;
 import com.api_aventesfinance.repository.LancamentoRepository;
+import com.api_aventesfinance.repository.MovimentacaoLancamentoRepository;
 
 @Service
 public class LancamentoService {
@@ -30,6 +31,9 @@ public class LancamentoService {
 
     @Autowired
     private MovimentacaoLancamentoService movimentacaoService;
+
+    @Autowired
+    private MovimentacaoLancamentoRepository movimentacaoRepository;
 
     @Transactional(rollbackFor = Exception.class)
     public Lancamento salvarItens(Lancamento objeto) throws Exception {
@@ -86,6 +90,8 @@ public class LancamentoService {
     }
 
     public Long excluir(Long id) {
+
+        movimentacaoRepository.deleteByIdLancamento(id);
 
         itemObjetoRepository.deleteByIdLancamento(id);
         repository.deleteById(id);
