@@ -24,10 +24,10 @@ public class MovimentacaoLancamentoService {
     public void atualizarMovimentacaoLancamento(Long idLancamento) {
 
         String sql = """
-                WITH lancamento_temp AS (
+                    WITH lancamento_temp AS (
                     SELECT
                       id_lancamento,
-                      dt_movimento,
+                      max(dt_movimento) as dt_movimento,
                       MAX(id_centrocusto) AS id_centrocusto,
                       SUM(vl_receita) AS vl_receita,
                       SUM(vl_despesa) AS vl_despesa,
@@ -71,12 +71,13 @@ public class MovimentacaoLancamentoService {
 
                     ) AS t
                     WHERE id_lancamento = :idLancamento
-                    GROUP BY dt_movimento, id_lancamento
+                    GROUP BY  id_lancamento
                 )
 
-                select * from lancamento_temp;
 
-                """;
+                    select * from lancamento_temp;
+
+                    """;
 
         List<Object[]> results = entityManager.createNativeQuery(sql)
                 .setParameter("idLancamento", idLancamento)
@@ -116,28 +117,7 @@ public class MovimentacaoLancamentoService {
             entityManager.merge(entity);
         }
 
-        // for (MovimentacaoLancamentoDTO dto : dtos) {
-        // // Buscar entidade existente
-        // MovimentacaoLancamento entity =
-        // entityManager.find(MovimentacaoLancamento.class, dto.getIdLancamento());
-
-        // if (entity == null) {
-        // // Criar nova entidade
-        // entity = new MovimentacaoLancamento();
-        // entity.setId_lancamento(dto.getIdLancamento());
-        // }
-
-        // // Atualizar os campos
-        // entity.setDt_movimento(dto.getDtMovimento());
-        // entity.setId_centrocusto(dto.getIdCentroCusto());
-        // entity.setVl_receita(dto.getVlReceita());
-        // entity.setVl_despesa(dto.getVlDespesa());
-        // entity.setVl_saldo(dto.getVlSaldo());
-        // entity.setDt_anomes(dto.getDtAnomes());
-
-        // // Salvar ou atualizar
-        // entityManager.merge(entity);
-        // }
+        
 
     }
 }
