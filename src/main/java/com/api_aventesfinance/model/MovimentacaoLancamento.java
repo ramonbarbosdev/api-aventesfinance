@@ -28,16 +28,22 @@ public class MovimentacaoLancamento {
     @Column(name = "id_movimentacao")
     private Long id_movimentacao;
 
-    @ManyToOne
-    @JoinColumn(name = "id_lancamento", nullable = true)
-    private Lancamento lancamento;
+    @Column(unique = false, nullable = true)
+    private Long id_lancamento;
+
+    @ManyToOne()
+    @JoinColumn(name = "id_lancamento", insertable = false, updatable = false)
+    private Lancamento Lancamento;
 
     @Column(unique = false, nullable = true)
     private LocalDate dt_movimento;
 
-    @ManyToOne
-    @JoinColumn(name = "id_centrocusto", nullable = true)
+    @ManyToOne()
+    @JoinColumn(name = "id_centrocusto", insertable = false, updatable = false)
     private CentroCusto centroCusto;
+
+    @Column(unique = false, nullable = true)
+    private Long id_centrocusto;
 
     @Column(unique = false, nullable = true)
     private Double vl_receita;
@@ -59,7 +65,14 @@ public class MovimentacaoLancamento {
         this.id_movimentacao = id_movimentacao;
     }
 
- 
+    public Long getId_lancamento() {
+        return id_lancamento;
+    }
+
+    public void setId_lancamento(Long id_lancamento) {
+        this.id_lancamento = id_lancamento;
+    }
+
 
     public CentroCusto getCentroCusto() {
         return centroCusto;
@@ -69,8 +82,21 @@ public class MovimentacaoLancamento {
         this.centroCusto = centroCusto;
     }
 
+    public Long getId_centrocusto() {
+        return id_centrocusto;
+    }
 
-  
+    public void setId_centrocusto(Long id_centrocusto) {
+        this.id_centrocusto = id_centrocusto;
+    }
+
+    public Lancamento getLancamento() {
+        return Lancamento;
+    }
+
+    public void setLancamento(Lancamento lancamento) {
+        Lancamento = lancamento;
+    }
 
     public Double getVl_despesa() {
         return vl_despesa;
@@ -99,25 +125,15 @@ public class MovimentacaoLancamento {
     public String getDt_anomes() {
         return dt_anomes;
     }
-
     public void setDt_anomes(String dt_anomes) {
         this.dt_anomes = dt_anomes;
     }
-
     public LocalDate getDt_movimento() {
         return dt_movimento;
     }
-
     public void setDt_movimento(LocalDate dt_movimento) {
         this.dt_movimento = dt_movimento;
     }
 
-    public Lancamento getLancamento() {
-        return lancamento;
-    }
-    public void setLancamento(Lancamento lancamento) {
-        this.lancamento = lancamento;
-    }
-    
 
 }
