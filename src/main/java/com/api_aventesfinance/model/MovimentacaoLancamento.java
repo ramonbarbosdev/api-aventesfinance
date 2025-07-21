@@ -13,6 +13,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotBlank;
@@ -24,7 +25,8 @@ import jakarta.validation.constraints.NotBlank;
 public class MovimentacaoLancamento {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_movimentacao")
+    @SequenceGenerator(name = "seq_movimentacao", sequenceName = "seq_movimentacao", allocationSize = 1)
     @Column(name = "id_movimentacao")
     private Long id_movimentacao;
 
@@ -72,7 +74,6 @@ public class MovimentacaoLancamento {
     public void setId_lancamento(Long id_lancamento) {
         this.id_lancamento = id_lancamento;
     }
-
 
     public CentroCusto getCentroCusto() {
         return centroCusto;
@@ -125,15 +126,17 @@ public class MovimentacaoLancamento {
     public String getDt_anomes() {
         return dt_anomes;
     }
+
     public void setDt_anomes(String dt_anomes) {
         this.dt_anomes = dt_anomes;
     }
+
     public LocalDate getDt_movimento() {
         return dt_movimento;
     }
+
     public void setDt_movimento(LocalDate dt_movimento) {
         this.dt_movimento = dt_movimento;
     }
-
 
 }
