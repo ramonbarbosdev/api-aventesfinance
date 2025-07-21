@@ -1,89 +1,89 @@
-name: Maven Deploy
+# name: Maven Deploy
 
-on:
-  push:
-    branches:
-      - main  
+# on:
+#   push:
+#     branches:
+#       - main  
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
 
-    outputs:
-      jar_name: ${{ steps.set_jar_name.outputs.jar_name }}
+#     outputs:
+#       jar_name: ${{ steps.set_jar_name.outputs.jar_name }}
 
-    steps:
-      - name: Checkout do código
-        uses: actions/checkout@v2
+#     steps:
+#       - name: Checkout do código
+#         uses: actions/checkout@v2
 
-      - name: Definir versão do JDK
-        uses: actions/setup-java@v2
-        with:
-          java-version: '20'  
-          distribution: 'adopt'
+#       - name: Definir versão do JDK
+#         uses: actions/setup-java@v2
+#         with:
+#           java-version: '20'  
+#           distribution: 'adopt'
 
-      - name: Build com Maven
-        run: mvn -B package -DskipTests --file pom.xml
+#       - name: Build com Maven
+#         run: mvn -B package -DskipTests --file pom.xml
 
-      - name: Criar diretório para build do JAR
-        run: mkdir ./jar-upload
+#       - name: Criar diretório para build do JAR
+#         run: mkdir ./jar-upload
 
-      - name: Copiar e renomear o JAR
-        run: |
-          ORIGINAL_JAR=$(ls ./target/*.jar | head -n 1)
-          cp "$ORIGINAL_JAR" ./jar-upload/api-avantesfinance.jar
+#       - name: Copiar e renomear o JAR
+#         run: |
+#           ORIGINAL_JAR=$(ls ./target/*.jar | head -n 1)
+#           cp "$ORIGINAL_JAR" ./jar-upload/api-avantesfinance.jar
 
-      - name: Definir nome do JAR (sem extensão)
-        id: set_jar_name
-        run: echo "::set-output name=jar_name::$(basename $(ls ./jar-upload/*.jar) .jar)"
+#       - name: Definir nome do JAR (sem extensão)
+#         id: set_jar_name
+#         run: echo "::set-output name=jar_name::$(basename $(ls ./jar-upload/*.jar) .jar)"
 
-      - name: Debug - Exibir nome do JAR
-        run: echo "O nome do arquivo JAR é ${{ steps.set_jar_name.outputs.jar_name }}"
+#       - name: Debug - Exibir nome do JAR
+#         run: echo "O nome do arquivo JAR é ${{ steps.set_jar_name.outputs.jar_name }}"
 
-      - name: Enviar JAR via FTP
-        uses: SamKirkland/FTP-Deploy-Action@4.0.0
-        with:
-          server: ${{ secrets.HOST }}   
-          username: ${{ secrets.USUARIOCPANEL }}
-          password: ${{ secrets.SENHACPANEL }}
-          local-dir: ./jar-upload/
-          server-dir: ~/appservers/standalone/
+#       - name: Enviar JAR via FTP
+#         uses: SamKirkland/FTP-Deploy-Action@4.0.0
+#         with:
+#           server: ${{ secrets.HOST }}   
+#           username: ${{ secrets.USUARIOCPANEL }}
+#           password: ${{ secrets.SENHACPANEL }}
+#           local-dir: ./jar-upload/
+#           server-dir: ~/appservers/standalone/
 
-      - name: Instalar cliente SSH
-        run: sudo apt-get install openssh-client sshpass expect
+#       - name: Instalar cliente SSH
+#         run: sudo apt-get install openssh-client sshpass expect
 
-      - name: Parar aplicação Spring Boot remotamente
-        env:
-          USUARIOCPANEL: ${{ secrets.USUARIOCPANEL }}
-          HOST: ${{ secrets.HOST }}
-          SENHACPANEL: ${{ secrets.SENHACPANEL }}
-        run: |
-          expect -c "
-          set timeout 20
-          spawn ssh -o StrictHostKeyChecking=no $USUARIOCPANEL@$HOST
-          expect \"password:\"
-          send \"$SENHACPANEL\r\"
-          expect \"\$ \"
-          send \"bash appservers/tmp/${{ steps.set_jar_name.outputs.jar_name }}.sh stop\r\"
-          expect \"\$ \"
-          send \"exit\r\"
-          expect eof
-          "
+#       - name: Parar aplicação Spring Boot remotamente
+#         env:
+#           USUARIOCPANEL: ${{ secrets.USUARIOCPANEL }}
+#           HOST: ${{ secrets.HOST }}
+#           SENHACPANEL: ${{ secrets.SENHACPANEL }}
+#         run: |
+#           expect -c "
+#           set timeout 20
+#           spawn ssh -o StrictHostKeyChecking=no $USUARIOCPANEL@$HOST
+#           expect \"password:\"
+#           send \"$SENHACPANEL\r\"
+#           expect \"\$ \"
+#           send \"bash appservers/tmp/${{ steps.set_jar_name.outputs.jar_name }}.sh stop\r\"
+#           expect \"\$ \"
+#           send \"exit\r\"
+#           expect eof
+#           "
 
-      - name: Iniciar aplicação Spring Boot remotamente
-        env:
-          USUARIOCPANEL: ${{ secrets.USUARIOCPANEL }}
-          HOST: ${{ secrets.HOST }}
-          SENHACPANEL: ${{ secrets.SENHACPANEL }}
-        run: |
-          expect -c "
-          set timeout 20
-          spawn ssh -o StrictHostKeyChecking=no $USUARIOCPANEL@$HOST
-          expect \"password:\"
-          send \"$SENHACPANEL\r\"
-          expect \"\$ \"
-          send \"bash appservers/tmp/${{ steps.set_jar_name.outputs.jar_name }}.sh start\r\"
-          expect \"\$ \"
-          send \"exit\r\"
-          expect eof
-          "
+#       - name: Iniciar aplicação Spring Boot remotamente
+#         env:
+#           USUARIOCPANEL: ${{ secrets.USUARIOCPANEL }}
+#           HOST: ${{ secrets.HOST }}
+#           SENHACPANEL: ${{ secrets.SENHACPANEL }}
+#         run: |
+#           expect -c "
+#           set timeout 20
+#           spawn ssh -o StrictHostKeyChecking=no $USUARIOCPANEL@$HOST
+#           expect \"password:\"
+#           send \"$SENHACPANEL\r\"
+#           expect \"\$ \"
+#           send \"bash appservers/tmp/${{ steps.set_jar_name.outputs.jar_name }}.sh start\r\"
+#           expect \"\$ \"
+#           send \"exit\r\"
+#           expect eof
+#           "
