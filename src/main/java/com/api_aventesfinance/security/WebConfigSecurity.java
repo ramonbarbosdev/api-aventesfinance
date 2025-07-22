@@ -83,7 +83,9 @@ public class WebConfigSecurity {
                 "http://localhost:4200",
                 "https://avantes.ramoncode.com.br",
                 "https://apiavantes.ramoncode.com.br",
-                "https://apiavantes.ramoncode.com.br:8080"));
+                "https://apiavantes.ramoncode.com.br:8080",
+                "http://apiavantes.ramoncode.com.br"
+                ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
