@@ -50,6 +50,16 @@ public class Usuario implements UserDetails {
 	private String nome;
 	
 	private String token = "";
+
+	private String img;
+
+	public String getImg() {
+		return img;
+	}
+
+	public void setImg(String img) {
+		this.img = img;
+	}
 	
 
 	@OneToMany(fetch = FetchType.EAGER)

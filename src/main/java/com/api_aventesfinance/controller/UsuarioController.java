@@ -1,9 +1,14 @@
 package com.api_aventesfinance.controller;
 
-
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.api_aventesfinance.dto.UsuarioDTO;
 import com.api_aventesfinance.model.Usuario;
@@ -30,95 +36,133 @@ import com.api_aventesfinance.repository.UsuarioRepository;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-
-
 //@CrossOrigin(origins = "*")
-@RestController /*ARQUITETURA REST*/
+@RestController /* ARQUITETURA REST */
 @RequestMapping(value = "/usuario")
 @Tag(name = "Usuarios")
 public class UsuarioController {
-	
-	@Autowired /*se fosse CDI seria @inject*/
+
+	@Autowired /* se fosse CDI seria @inject */
 	private UsuarioRepository usuarioRepository;
-	
-	/*SERVIÇO RESTFULL*/
-	
+
+	/* SERVIÇO RESTFULL */
+
 	@GetMapping(value = "/{id}", produces = "application/json")
 	@CacheEvict(value = "cacheuser", allEntries = true)
 	@CachePut("cacheuser")
-	public ResponseEntity<UsuarioDTO> init(@PathVariable (value="id") Long id )
-	{
-		
-		Optional<Usuario> usuario =  usuarioRepository.findById(id);
-		
+	public ResponseEntity<UsuarioDTO> init(@PathVariable(value = "id") Long id) {
+
+		Optional<Usuario> usuario = usuarioRepository.findById(id);
+
 		return new ResponseEntity<UsuarioDTO>(new UsuarioDTO(usuario.get()), HttpStatus.OK);
 	}
 
 	@GetMapping(value = "/", produces = "application/json")
-	@CacheEvict(value = "cacheusuario", allEntries = true) //remover cache nao utilizado
-	@CachePut("cacheusuario") //atualizar cache
-	public ResponseEntity<List<?>> usuario () throws InterruptedException
-	{
-		 List<Usuario> usuarios = (List<Usuario>) usuarioRepository.findAll(); // Consulta todos os usuários
-    
+	@CacheEvict(value = "cacheusuario", allEntries = true) // remover cache nao utilizado
+	@CachePut("cacheusuario") // atualizar cache
+	public ResponseEntity<List<?>> usuario() throws InterruptedException {
+		List<Usuario> usuarios = (List<Usuario>) usuarioRepository.findAll(); // Consulta todos os usuários
+
 		// Mapeia cada objeto Usuario para UsuarioDTO
 		List<UsuarioDTO> usuariosDTO = usuarios.stream()
 				.map(usuario -> new UsuarioDTO(usuario)) // Usando o construtor para mapear
 				.collect(Collectors.toList()); // Coleta todos os DTOs em uma lista
-		
+
 		return new ResponseEntity<>(usuariosDTO, HttpStatus.OK);
 	}
-	
-	@PostMapping(value="/" , produces = "application/json")
-	public ResponseEntity<Usuario> cadastrar(@RequestBody Usuario usuario)
-	{
-		
-		
+
+	@PostMapping("/{id}/upload-foto")
+	public ResponseEntity<?> uploadFotoPerfil(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+		try {
+			// Obtém o ano atual
+			String anoAtual = String.valueOf(java.time.Year.now().getValue());
+
+			// Caminho da pasta ano dentro da pasta uploads
+			Path pastaAno = Paths.get("uploads", anoAtual);
+
+			// Verifica se a pasta existe, se não existir, cria
+			if (!Files.exists(pastaAno)) {
+				Files.createDirectories(pastaAno);
+			}
+
+			// Gera nome do arquivo
+			String nomeArquivo = UUID.randomUUID() + "_" + file.getOriginalFilename();
+
+			// Caminho completo do arquivo dentro da pasta do ano
+			Path caminhoArquivo = pastaAno.resolve(nomeArquivo);
+
+			// Salva o arquivo no caminho definido
+			Files.copy(file.getInputStream(), caminhoArquivo);
+
+			// Atualiza usuário com o caminho relativo da imagem
+			Usuario usuario = usuarioRepository.findById(id)
+					.orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+			usuario.setImg("/uploads/" + anoAtual + "/" + nomeArquivo);
+			usuarioRepository.save(usuario);
+
+			return new ResponseEntity<>(Map.of("message", "Imagem atualizada com sucesso!"), HttpStatus.OK);
+
+		} catch (IOException e) {
+			return new ResponseEntity<>(Map.of("message", "Erro ao salvar imagem"), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@PostMapping(value = "/perfil/", produces = "application/json")
+	public ResponseEntity<?> atualizarPerfil(@RequestBody Usuario usuario) {
+
+		Usuario userTemporario = usuarioRepository.findUserByLogin(usuario.getLogin());
+
+		if (userTemporario == null) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"message\": \"Usuário não encontrado.\"}");
+		}
+
+		userTemporario.setLogin(usuario.getLogin()) ;
+		userTemporario.setNome(usuario.getNome()) ;
+
+		Usuario usuarioSalvo = usuarioRepository.save(userTemporario);
+
+		return new ResponseEntity<>(Map.of("message", "Atualizado com sucesso!"), HttpStatus.OK);
+	}
+
+	@PostMapping(value = "/", produces = "application/json")
+	public ResponseEntity<Usuario> cadastrar(@RequestBody Usuario usuario) {
+
 		String senhacriptografada = new BCryptPasswordEncoder().encode(usuario.getSenha());
 		usuario.setSenha(senhacriptografada);
 		Usuario usuarioSalvo = usuarioRepository.save(usuario);
-		
+
 		return new ResponseEntity<Usuario>(usuarioSalvo, HttpStatus.OK);
 	}
-	
-	@PutMapping(value="/" , produces = "application/json")
-	public ResponseEntity<?> atualizar(@RequestBody Usuario usuario)
-	{
-		
-		
-	
+
+	@PutMapping(value = "/", produces = "application/json")
+	public ResponseEntity<?> atualizar(@RequestBody Usuario usuario) {
+
 		Usuario userTemporario = usuarioRepository.findUserByLogin(usuario.getLogin());
-		
-		if (userTemporario == null)
-		{
-	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\": \"Usuário não encontrado.\"}");
-	    }
-		
-	    if (usuario.getSenha() == null || usuario.getSenha().trim().isEmpty())
-	    {
-	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\": \"Senha inválida. Não pode ser vazia.\"}");
-	    }
-		
-		if (!userTemporario.getSenha().equals(usuario.getSenha()))
-		{
+
+		if (userTemporario == null) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\": \"Usuário não encontrado.\"}");
+		}
+
+		if (usuario.getSenha() == null || usuario.getSenha().trim().isEmpty()) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body("{\"error\": \"Senha inválida. Não pode ser vazia.\"}");
+		}
+
+		if (!userTemporario.getSenha().equals(usuario.getSenha())) {
 			String senhacriptografada = new BCryptPasswordEncoder().encode(usuario.getSenha());
 			usuario.setSenha(senhacriptografada);
 		}
-		
+
 		Usuario usuarioSalvo = usuarioRepository.save(usuario);
-		
+
 		return new ResponseEntity<Usuario>(usuarioSalvo, HttpStatus.OK);
 	}
-	
-	@DeleteMapping(value = "/{id}", produces = "application/text" )
-	public String delete (@PathVariable("id") Long id)
-	{
+
+	@DeleteMapping(value = "/{id}", produces = "application/text")
+	public String delete(@PathVariable("id") Long id) {
 		usuarioRepository.deleteById(id);
-		
+
 		return "ok";
 	}
-	
-	
-	
 
 }

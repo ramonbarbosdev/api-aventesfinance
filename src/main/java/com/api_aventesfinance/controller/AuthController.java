@@ -74,7 +74,9 @@ public class AuthController {
                             "Authorization", token,
                             "id_usuario", objeto.getId(),
                             "login", objeto.getLogin(),
-                            "nm_usuario", objeto.getNome() != null ? objeto.getNome() : ""));
+                            "img", objeto.getImg() != null ? objeto.getImg() : "",
+                            "nm_usuario", objeto.getNome() != null ? objeto.getNome() : "")
+                            );
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Usuário ou senha invalidos"));
         }

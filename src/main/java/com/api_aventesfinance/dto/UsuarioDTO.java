@@ -15,6 +15,7 @@ public class UsuarioDTO  implements Serializable{
 	private String userLogin;
 	private String userNome;
 	private String userSenha;   
+	private String userImg;
 
 
 	public UsuarioDTO(Usuario usuario) 
@@ -23,8 +24,17 @@ public class UsuarioDTO  implements Serializable{
 		this.userLogin = usuario.getLogin();
 		this.userNome = usuario.getNome();
 		this.userSenha = usuario.getSenha();
+		this.userImg = usuario.getImg();
 
 	}
+
+	public String getUserImg() {
+		return userImg;
+	}
+	public void setUserImg(String userImg) {
+		this.userImg = userImg;
+	}
+
 
 	public Long getUserId() {
 		return userId;
