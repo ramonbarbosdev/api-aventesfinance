@@ -121,7 +121,7 @@ public class UsuarioController {
 
 		userTemporario.setLogin(usuario.getLogin());
 		userTemporario.setNome(usuario.getNome());
-
+		
 		Usuario usuarioSalvo = usuarioRepository.save(userTemporario);
 
 		return new ResponseEntity<>(Map.of("message", "Atualizado com sucesso!"), HttpStatus.OK);
