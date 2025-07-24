@@ -31,7 +31,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.api_aventesfinance.dto.UsuarioDTO;
+import com.api_aventesfinance.model.Role;
 import com.api_aventesfinance.model.Usuario;
+import com.api_aventesfinance.repository.RoleRepository;
 import com.api_aventesfinance.repository.UsuarioRepository;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -42,10 +44,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "Usuarios")
 public class UsuarioController {
 
-	@Autowired /* se fosse CDI seria @inject */
+	@Autowired
 	private UsuarioRepository usuarioRepository;
 
-	/* SERVIÇO RESTFULL */
+	@Autowired
+	private RoleRepository roleRepository;
 
 	@GetMapping(value = "/{id}", produces = "application/json")
 	@CacheEvict(value = "cacheuser", allEntries = true)
@@ -116,8 +119,8 @@ public class UsuarioController {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"message\": \"Usuário não encontrado.\"}");
 		}
 
-		userTemporario.setLogin(usuario.getLogin()) ;
-		userTemporario.setNome(usuario.getNome()) ;
+		userTemporario.setLogin(usuario.getLogin());
+		userTemporario.setNome(usuario.getNome());
 
 		Usuario usuarioSalvo = usuarioRepository.save(userTemporario);
 
@@ -125,13 +128,29 @@ public class UsuarioController {
 	}
 
 	@PostMapping(value = "/", produces = "application/json")
-	public ResponseEntity<Usuario> cadastrar(@RequestBody Usuario usuario) {
+	public ResponseEntity<?> cadastrar(@RequestBody Usuario usuario) {
 
 		String senhacriptografada = new BCryptPasswordEncoder().encode(usuario.getSenha());
 		usuario.setSenha(senhacriptografada);
+
+		Role roleUser = roleRepository.findByNomeRole("ROLE_USER");
+		if (roleUser == null) {
+			roleUser = new Role();
+			roleUser.setNomeRole("ROLE_USER");
+			roleRepository.save(roleUser);
+		}
+		usuario.getRoles().add(roleUser);
+
+		Usuario userTemporario = usuarioRepository.findUserByLogin(usuario.getLogin());
+
+		if (userTemporario != null) {
+			return new ResponseEntity<>(Map.of("message", "O usuario informado já existe!"), HttpStatus.NOT_FOUND);
+		}
+
+
 		Usuario usuarioSalvo = usuarioRepository.save(usuario);
 
-		return new ResponseEntity<Usuario>(usuarioSalvo, HttpStatus.OK);
+		return new ResponseEntity<>(usuarioSalvo, HttpStatus.OK);
 	}
 
 	@PutMapping(value = "/", produces = "application/json")
@@ -158,11 +177,13 @@ public class UsuarioController {
 		return new ResponseEntity<Usuario>(usuarioSalvo, HttpStatus.OK);
 	}
 
-	@DeleteMapping(value = "/{id}", produces = "application/text")
-	public String delete(@PathVariable("id") Long id) {
+	@DeleteMapping(value = "/{id}", produces = "application/json")
+	public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+
+	
 		usuarioRepository.deleteById(id);
 
-		return "ok";
+		return ResponseEntity.ok(Map.of("message", "Removido com sucesso!"));
 	}
 
 }

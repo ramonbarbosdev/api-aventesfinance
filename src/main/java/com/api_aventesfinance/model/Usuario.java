@@ -53,13 +53,8 @@ public class Usuario implements UserDetails {
 
 	private String img;
 
-	public String getImg() {
-		return img;
-	}
 
-	public void setImg(String img) {
-		this.img = img;
-	}
+
 	
 
 	@OneToMany(fetch = FetchType.EAGER)
@@ -83,12 +78,28 @@ public class Usuario implements UserDetails {
 												foreignKey = @jakarta.persistence.ForeignKey(name = "role_fk", value =  ConstraintMode.CONSTRAINT)											
 												)								
 				)
-	private List<Role> roles;
+	private List<Role> roles = new ArrayList<>(); 
+	
+
 	
 	
 	/*Relacionamento Um pra muitos - Fim */
 	
 	
+	public String getImg() {
+		return img;
+	}
+
+	public void setImg(String img) {
+		this.img = img;
+	}
+
+	public List<Role> getRoles() {
+		return roles;
+	}
+	public void setRoles(List<Role> roles) {
+		this.roles = roles;
+	}
 	
 	public String getToken() {
 		return token;
