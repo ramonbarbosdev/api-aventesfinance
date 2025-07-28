@@ -40,9 +40,7 @@ public class ItemEmprestimo {
     @NotNull(message = "O emprestimo obrigatória")
     @Column(name = "id_emprestimo")
     private Long id_emprestimo;
- 
-    @Enumerated(EnumType.STRING)
-    private TipoEmprestimo tp_emprestimo;
+
 
     @NotBlank(message = "O valor é obrigatorio!")
     @Column(unique = false, nullable = false)
