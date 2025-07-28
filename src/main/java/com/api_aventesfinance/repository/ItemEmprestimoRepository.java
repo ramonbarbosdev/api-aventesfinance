@@ -31,10 +31,12 @@ public interface ItemEmprestimoRepository extends CrudRepository<ItemEmprestimo,
     Boolean obterSequencialExistente(String codigo, Long id);
 
 
+    @Query(value = "SELECT * FROM item_emprestimo l WHERE l.id_emprestimo = ?1", nativeQuery = true)
+    List<ItemEmprestimo> findByIdMestre(Long id);
 
     @Modifying
     @Query(value = "DELETE FROM item_emprestimo  WHERE id_emprestimo = ?1 ",  nativeQuery = true)
-    void deleteByIdLancamento(Long id);
+    void deleteByIdMestre(Long id);
    
 
 }

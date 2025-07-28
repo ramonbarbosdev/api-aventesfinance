@@ -59,5 +59,69 @@ public class ItemEmprestimo {
     @Enumerated(EnumType.STRING)
     private StatusEmprestimo tp_itemstatus;
 
+    public Long getId_itememprestimo() {
+        return id_itememprestimo;
+    }
+
+    public void setId_itememprestimo(Long id_itememprestimo) {
+        this.id_itememprestimo = id_itememprestimo;
+    }
+
+    public String getCd_itememprestimo() {
+        return cd_itememprestimo;
+    }
+
+    public void setCd_itememprestimo(String cd_itememprestimo) {
+        this.cd_itememprestimo = cd_itememprestimo;
+    }
+
+    public Emprestimo getEmprestimo() {
+        return emprestimo;
+    }
+
+    public void setEmprestimo(Emprestimo emprestimo) {
+        this.emprestimo = emprestimo;
+    }
+
+    public Long getId_emprestimo() {
+        return id_emprestimo;
+    }
+
+    public void setId_emprestimo(Long id_emprestimo) {
+        this.id_emprestimo = id_emprestimo;
+    }
+
+    public Double getVl_emprestimo() {
+        return vl_emprestimo;
+    }
+
+    public void setVl_emprestimo(Double vl_emprestimo) {
+        this.vl_emprestimo = vl_emprestimo;
+    }
+
+    public LocalDate getDt_vencimento() {
+        return dt_vencimento;
+    }
+
+    public void setDt_vencimento(LocalDate dt_vencimento) {
+        this.dt_vencimento = dt_vencimento;
+    }
+
+    public LocalDate getDt_pagamento() {
+        return dt_pagamento;
+    }
+
+    public void setDt_pagamento(LocalDate dt_pagamento) {
+        this.dt_pagamento = dt_pagamento;
+    }
+
+    public StatusEmprestimo getTp_itemstatus() {
+        return tp_itemstatus;
+    }
+
+    public void setTp_itemstatus(StatusEmprestimo tp_itemstatus) {
+        this.tp_itemstatus = tp_itemstatus;
+    }
+
 
 }

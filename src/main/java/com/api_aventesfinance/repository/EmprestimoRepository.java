@@ -25,7 +25,7 @@ public interface EmprestimoRepository extends CrudRepository<Emprestimo, Long> {
     Long obterSequencial();
 
     @Query(value = "SELECT cast(1 as boolean) as fl_existe FROM Emprestimo l WHERE l.cd_emprestimo = ?1 ")
-    Boolean obterSequencialExistente(String codigo, String dt_anomes);
+    Boolean obterSequencialExistente(String codigo);
 
    
 
