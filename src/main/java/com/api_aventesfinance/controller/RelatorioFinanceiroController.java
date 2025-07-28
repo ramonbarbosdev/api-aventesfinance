@@ -50,7 +50,7 @@ public class RelatorioFinanceiroController {
         return new ResponseEntity<>(resultado, HttpStatus.CREATED);
     }
 
-    @GetMapping(value = "/situacao-relatorio", produces = "application/json")
+    @GetMapping(value = "/situacao-emprestimo", produces = "application/json")
     public ResponseEntity<List<?>> obterSituacaoEmprestimo() {
 
        List<SituacaoEmprestimoDTO> resultado = service.obterSituacaoEmprestimo();

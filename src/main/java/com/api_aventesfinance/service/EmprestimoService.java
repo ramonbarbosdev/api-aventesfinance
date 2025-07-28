@@ -15,6 +15,7 @@ import com.api_aventesfinance.model.Lancamento;
 import com.api_aventesfinance.repository.EmprestimoRepository;
 import com.api_aventesfinance.repository.ItemEmprestimoRepository;
 import com.api_aventesfinance.repository.ItemLancamentoRepository;
+import com.api_aventesfinance.utils.DataUtils;
 
 @Service
 public class EmprestimoService {
@@ -30,6 +31,7 @@ public class EmprestimoService {
 
         objeto.setVl_total(0.0);
         Double valor_total = 0.0;
+        objeto.setDt_anomes(DataUtils.formatarAnoMes(objeto.getDt_emprestimo()));
 
         List<ItemEmprestimo> itens = objeto.getItens();
         objeto.setItens(null);
@@ -38,6 +40,7 @@ public class EmprestimoService {
         objeto = repository.save(objeto);
 
         removerItens(objeto, itens);
+
 
         if (itens != null && itens.size() > 0) {
             for (ItemEmprestimo item : itens) {

@@ -64,9 +64,19 @@ public class Emprestimo {
 
     private String ds_observacao;
 
+    private String dt_anomes;
+
      // Listagem de itens
     @OneToMany(mappedBy = "id_emprestimo", cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     public List<ItemEmprestimo> itens = new ArrayList<ItemEmprestimo>();
+
+    public String getDt_anomes() {
+        return dt_anomes;
+    }
+
+    public void setDt_anomes(String dt_anomes) {
+        this.dt_anomes = dt_anomes;
+    }
 
     public List<ItemEmprestimo> getItens() {
         return itens;

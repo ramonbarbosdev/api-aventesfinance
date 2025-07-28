@@ -16,6 +16,7 @@ import com.api_aventesfinance.repository.CategoriaRepository;
 import com.api_aventesfinance.repository.ItemLancamentoRepository;
 import com.api_aventesfinance.repository.LancamentoRepository;
 import com.api_aventesfinance.repository.MovimentacaoLancamentoRepository;
+import com.api_aventesfinance.utils.DataUtils;
 
 @Service
 public class LancamentoService {
@@ -40,6 +41,7 @@ public class LancamentoService {
 
         objeto.setVl_total(0.0);
         Double vl_lancamento = 0.0;
+        objeto.setDt_anomes(DataUtils.formatarAnoMes(objeto.getDt_lancamento()));
 
         validarObjeto(objeto);
         List<ItemLancamento> itens = objeto.getItens();
@@ -48,6 +50,7 @@ public class LancamentoService {
         objeto = repository.save(objeto);
 
         removerItens(objeto, itens);
+
 
         if (itens != null && itens.size() > 0) {
             for (ItemLancamento item : itens) {
