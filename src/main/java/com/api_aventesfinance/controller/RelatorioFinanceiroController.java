@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,10 +33,10 @@ public class RelatorioFinanceiroController {
 
         return new ResponseEntity<>(resultado, HttpStatus.CREATED);
     }
-    @GetMapping(value = "/fluxo-caixa-diario", produces = "application/json")
-    public ResponseEntity<List<?>> obterFluxoCaixaDiario() {
+    @GetMapping(value = "/fluxo-caixa-diario/{id}", produces = "application/json")
+    public ResponseEntity<List<?>> obterFluxoCaixaDiario(@PathVariable Long id) {
 
-        List<FluxoCaixaDiarioDTO> resultado = service.obterFluxoCaixaDiario();
+        List<FluxoCaixaDiarioDTO> resultado = service.obterFluxoCaixaDiario(id);
 
         return new ResponseEntity<>(resultado, HttpStatus.CREATED);
     }

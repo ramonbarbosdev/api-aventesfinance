@@ -72,6 +72,7 @@ public class RelatorioFinanceiroRepository {
                     )
 
                 SELECT
+                    id_lancamento,
                   dt_anomes AS mesAno,
                   lt.id_centrocusto,
                   cc.nm_centrocusto,
@@ -80,7 +81,7 @@ public class RelatorioFinanceiroRepository {
                   SUM(lt.vl_receita) - SUM(lt.vl_despesa) AS saldo
                 FROM lancamento_temp lt
                 JOIN centro_custo cc ON cc.id_centrocusto = lt.id_centrocusto
-                GROUP BY lt.dt_anomes, lt.id_centrocusto, cc.nm_centrocusto
+                GROUP BY lt.dt_anomes, lt.id_centrocusto, cc.nm_centrocusto, id_lancamento
                 ORDER BY lt.dt_anomes
 
                                           """;
@@ -88,15 +89,17 @@ public class RelatorioFinanceiroRepository {
         List<Object[]> results = em.createNativeQuery(sql).getResultList();
 
         return results.stream().map(r -> new FluxoCaixaDTO(
-                (String) r[0],
-                (Long) r[1],
-                (String) r[2],
-                BigDecimal.valueOf(((Number) r[3]).doubleValue()),
+                (Long) r[0],
+                (String) r[1],
+                (Long) r[2],
+                (String) r[3],
                 BigDecimal.valueOf(((Number) r[4]).doubleValue()),
-                BigDecimal.valueOf(((Number) r[5]).doubleValue()))).toList();
+                BigDecimal.valueOf(((Number) r[5]).doubleValue()),
+                BigDecimal.valueOf(((Number) r[6]).doubleValue())
+                )).toList();
     }
 
-    public List<FluxoCaixaDiarioDTO> buscarFluxoCaixaDiario() {
+    public List<FluxoCaixaDiarioDTO> buscarFluxoCaixaDiario(Long id) {
         String sql = """
                WITH lancamento_temp AS (
                     SELECT
@@ -149,12 +152,15 @@ public class RelatorioFinanceiroRepository {
                     SUM(vl_despesa) AS despesa,
                     SUM(vl_saldo) AS saldo
                     FROM lancamento_temp
+                    WHERE id_lancamento =  :idLancamento
                     GROUP BY dt_movimento, id_lancamento
                     ORDER BY dt_movimento;
 
                                           """;
 
-        List<Object[]> results = em.createNativeQuery(sql).getResultList();
+        List<Object[]> results = em.createNativeQuery(sql)
+                .setParameter("idLancamento", id)
+        .getResultList();
 
         return results.stream().map(r -> new FluxoCaixaDiarioDTO(
                 (Long) r[0],

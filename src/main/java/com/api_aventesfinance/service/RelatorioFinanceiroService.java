@@ -22,8 +22,8 @@ public class RelatorioFinanceiroService {
         return repository.buscarFluxoCaixaMensal();
     }
 
-    public List<FluxoCaixaDiarioDTO> obterFluxoCaixaDiario() {
-        return repository.buscarFluxoCaixaDiario();
+    public List<FluxoCaixaDiarioDTO> obterFluxoCaixaDiario(Long id) {
+        return repository.buscarFluxoCaixaDiario( id);
     }
 
     public List<ReceitaDespesaCategoriaDTO> obterReceitaDespesaCategoria() {
