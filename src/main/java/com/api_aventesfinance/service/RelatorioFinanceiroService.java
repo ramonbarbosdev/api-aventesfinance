@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.api_aventesfinance.dto.relatorio.FluxoCaixaDTO;
 import com.api_aventesfinance.dto.relatorio.FluxoCaixaDiarioDTO;
 import com.api_aventesfinance.dto.relatorio.ReceitaDespesaCategoriaDTO;
+import com.api_aventesfinance.dto.relatorio.SituacaoEmprestimoDTO;
 import com.api_aventesfinance.repository.RelatorioFinanceiroRepository;
 
 @Service
@@ -28,6 +29,9 @@ public class RelatorioFinanceiroService {
 
     public List<ReceitaDespesaCategoriaDTO> obterReceitaDespesaCategoria() {
         return repository.buscarReceitaDespesaCategoria();
+    }
+    public List<SituacaoEmprestimoDTO> obterSituacaoEmprestimo() {
+        return repository.buscarSituacaoEmprestimo();
     }
 
 }

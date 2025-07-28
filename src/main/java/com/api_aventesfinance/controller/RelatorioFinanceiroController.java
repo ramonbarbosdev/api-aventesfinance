@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.api_aventesfinance.dto.relatorio.FluxoCaixaDTO;
 import com.api_aventesfinance.dto.relatorio.FluxoCaixaDiarioDTO;
 import com.api_aventesfinance.dto.relatorio.ReceitaDespesaCategoriaDTO;
+import com.api_aventesfinance.dto.relatorio.SituacaoEmprestimoDTO;
 import com.api_aventesfinance.service.RelatorioFinanceiroService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -45,6 +46,14 @@ public class RelatorioFinanceiroController {
     public ResponseEntity<List<?>> obterReceitaDespesaCategoria() {
 
        List<ReceitaDespesaCategoriaDTO> resultado = service.obterReceitaDespesaCategoria();
+
+        return new ResponseEntity<>(resultado, HttpStatus.CREATED);
+    }
+
+    @GetMapping(value = "/situacao-relatorio", produces = "application/json")
+    public ResponseEntity<List<?>> obterSituacaoEmprestimo() {
+
+       List<SituacaoEmprestimoDTO> resultado = service.obterSituacaoEmprestimo();
 
         return new ResponseEntity<>(resultado, HttpStatus.CREATED);
     }
