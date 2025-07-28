@@ -40,21 +40,19 @@ public class Emprestimo {
     private String cd_emprestimo;
 
     @Schema(enumAsRef = true, description = "Tipo do empréstimo (RECEBIDO, CONCEDIDO)")
-    @NotBlank(message = "O tipo emprestimo é obrigatorio!")
+    @NotNull(message = "O tipo emprestimo é obrigatorio!")
     @Column(unique = false, nullable = false)
     @Enumerated(EnumType.STRING)
     private TipoEmprestimo tp_emprestimo;
 
-    @NotBlank(message = "O valor é obrigatorio!")
-    @Column(unique = false, nullable = false)
     private Double vl_total;
 
-    @NotBlank(message = "O valor é obrigatorio!")
+    @NotNull(message = "O valor é obrigatorio!")
     @Column(unique = false, nullable = false)
     private LocalDate dt_emprestimo;
 
     @Schema(enumAsRef = true, description = "Status do empréstimo (PENDENTE, QUITADO, ATRASADO)")
-    @NotBlank(message = "O status é obrigatorio!")
+    @NotNull(message = "O status é obrigatorio!")
     @Column(unique = false, nullable = false)
     @Enumerated(EnumType.STRING)
     private StatusEmprestimo tp_status;
@@ -63,7 +61,6 @@ public class Emprestimo {
     @JoinColumn(name = "id_centrocusto", insertable = false, updatable = false)
     private CentroCusto centroCusto;
 
-    @NotNull(message = "A centro de custo é obrigatória")
     @Column(name = "id_centrocusto")
     private Long id_centrocusto;
 

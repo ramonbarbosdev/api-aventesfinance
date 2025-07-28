@@ -37,24 +37,24 @@ public class ItemEmprestimo {
     @JoinColumn(name = "id_emprestimo", insertable = false, updatable = false)
     private Emprestimo emprestimo;
 
-    @NotNull(message = "O emprestimo obrigatória")
+    @NotNull(message = "O Emprestimo obrigatorio")
     @Column(name = "id_emprestimo")
     private Long id_emprestimo;
 
 
-    @NotBlank(message = "O valor é obrigatorio!")
+    @NotNull(message = "O valor é obrigatorio!")
     @Column(unique = false, nullable = false)
     private Double vl_emprestimo;
 
-    @NotBlank(message = "O Data do vencimento é obrigatorio!")
+    @NotNull(message = "O Data do vencimento é obrigatorio!")
     @Column(unique = false, nullable = false)
     private LocalDate dt_vencimento;
 
-    @NotBlank(message = "O Data do pagamento é obrigatorio!")
+    @NotNull(message = "O Data do pagamento é obrigatorio!")
     @Column(unique = false, nullable = false)
     private LocalDate dt_pagamento ;
 
-    @NotBlank(message = "O status é obrigatorio!")
+    @NotNull(message = "O status é obrigatorio!")
     @Column(unique = false, nullable = false)
     @Enumerated(EnumType.STRING)
     private StatusEmprestimo tp_itemstatus;
@@ -75,13 +75,7 @@ public class ItemEmprestimo {
         this.cd_itememprestimo = cd_itememprestimo;
     }
 
-    public Emprestimo getEmprestimo() {
-        return emprestimo;
-    }
-
-    public void setEmprestimo(Emprestimo emprestimo) {
-        this.emprestimo = emprestimo;
-    }
+  
 
     public Long getId_emprestimo() {
         return id_emprestimo;

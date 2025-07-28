@@ -32,11 +32,6 @@ public abstract  class  BaseController<T,D,ID> {
     public ResponseEntity<List<?>> obterTodos() 
     {
         List<T> entidades = (List<T>) repository.findAll();
-
-        // if (entidades.isEmpty())
-        // {
-        //     throw new MensagemException("Nenhum registro encontrada!");
-        // }
  
         return new ResponseEntity<>(entidades, HttpStatus.OK);
     }

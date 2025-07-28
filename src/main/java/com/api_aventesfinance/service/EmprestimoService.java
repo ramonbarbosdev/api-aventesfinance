@@ -28,31 +28,32 @@ public class EmprestimoService {
     public Emprestimo salvarItens(Emprestimo objeto) throws Exception {
 
         objeto.setVl_total(0.0);
-        Double vl_lancamento = 0.0;
+        Double valor_total = 0.0;
 
         List<ItemEmprestimo> itens = objeto.getItens();
         objeto.setItens(null);
 
+        validarObjeto(objeto);
         objeto = repository.save(objeto);
 
         removerItens(objeto, itens);
 
         if (itens != null && itens.size() > 0) {
             for (ItemEmprestimo item : itens) {
-                item.setId_emprestimo(null);
+               item.setId_emprestimo(objeto.getId_emprestimo());
 
                 if (item.getId_itememprestimo() == null || item.getId_itememprestimo() == 0) {
-                    item.setId_itememprestimo(null); // Força o Hibernate a tratar como novo
+                    item.setId_itememprestimo(null); 
                 }
 
                 validacaoItem(item, itens, objeto.getId_emprestimo());
                 item = itemRepository.save(item);
-                vl_lancamento += item.getVl_emprestimo();
+                valor_total += item.getVl_emprestimo();
             }
         }
 
-        objeto.setVl_total(vl_lancamento);
-        validarValorTotalItem(itens, vl_lancamento);
+        objeto.setVl_total(valor_total);
+        validarValorTotalItem(itens, valor_total);
         objeto.setItens(itens);
         objeto = repository.save(objeto);
 

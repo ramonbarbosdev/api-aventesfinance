@@ -1,5 +1,6 @@
 package com.api_aventesfinance.controller;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -34,31 +35,53 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class EmprestimoController extends BaseController<Emprestimo, EmprestimoDTO, Long> {
 
     @Autowired
-    private EmprestimoRepository repository;
-
-    public EmprestimoController(CrudRepository<Emprestimo, Long> repository) {
-        super(repository);
-    }
+    private EmprestimoRepository objetoRepository;
 
     @Autowired
     private ItemEmprestimoRepository itemEmprestimoRepository;
 
+
+
     @Autowired
     private EmprestimoService service;
 
+        public EmprestimoController(CrudRepository<Emprestimo, Long> repository) {
+        super(repository);
+    }
+
+
     @PostMapping(value = "/cadastrar", produces = "application/json")
-	public ResponseEntity<?> cadastrarMestreDatalhe(@RequestBody Emprestimo objeto) throws Exception {
+    public ResponseEntity<?> cadastrarMestreDatalhe(@RequestBody Emprestimo objeto) throws Exception {
 
-		service.salvarItens(objeto);
-		return new ResponseEntity<>(objeto, HttpStatus.OK);
-	}
-
-
+        service.salvarItens(objeto);
+        return new ResponseEntity<>(objeto, HttpStatus.OK);
+    }
 
     @GetMapping(value = "/sequencia", produces = "application/json")
     @Operation(summary = "Gerar sequencia")
     public ResponseEntity<?> obterSequencia() {
-        Long ultima_sequencia = Optional.ofNullable(repository.obterSequencial()).orElse(0L);
+        Long ultima_sequencia = Optional.ofNullable(objetoRepository.obterSequencial()).orElse(0L);
+
+        Long sq_sequencia = ultima_sequencia + 1;
+        String resposta = "%03d".formatted(sq_sequencia);
+
+        return new ResponseEntity<>(Map.of("sequencia", resposta), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/sequencia-detalhe/{id}", produces = "application/json")
+    @Operation(summary = "Gerar sequencia")
+    public ResponseEntity<?> obterSequenciaDetalhe(@PathVariable Long id) {
+
+        Long ultima_sequencia;
+
+        if (id != 0) {
+            ultima_sequencia = Optional.ofNullable(itemEmprestimoRepository.obterSequencialById(Long.valueOf(id)))
+                    .orElse(0L);
+
+        } else {
+            ultima_sequencia = (long) 0;
+
+        }
 
         Long sq_sequencia = ultima_sequencia + 1;
         String resposta = "%03d".formatted(sq_sequencia);
@@ -77,12 +100,11 @@ public class EmprestimoController extends BaseController<Emprestimo, EmprestimoD
     }
 
     @DeleteMapping(value = "/deletar/{id}", produces = "application/json")
-	public ResponseEntity<?> deletar(@PathVariable Long id) {
+    public ResponseEntity<?> deletar(@PathVariable Long id) {
 
+        service.excluir(id);
+        return new ResponseEntity<>(Map.of("message", "Deletado com sucesso!"), HttpStatus.OK);
 
-		service.excluir(id);
-		return new ResponseEntity<>(Map.of("message", "Deletado com sucesso!"), HttpStatus.OK);
-
-	}
+    }
 
 }
