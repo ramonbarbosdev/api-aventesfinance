@@ -3,7 +3,6 @@ package com.api_aventesfinance.controller;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +52,7 @@ public class UsuarioController {
 	@GetMapping(value = "/{id}", produces = "application/json")
 	@CacheEvict(value = "cacheuser", allEntries = true)
 	@CachePut("cacheuser")
-	public ResponseEntity<UsuarioDTO> init(@PathVariable(value = "id") Long id) {
+	public ResponseEntity<UsuarioDTO> init(@PathVariable Long id) {
 
 		Optional<Usuario> usuario = usuarioRepository.findById(id);
 
@@ -75,13 +74,13 @@ public class UsuarioController {
 	}
 
 	@PostMapping("/{id}/upload-foto")
-	public ResponseEntity<?> uploadFotoPerfil(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+	public ResponseEntity<?> uploadFotoPerfil(@PathVariable Long id, @RequestParam MultipartFile file) {
 		try {
 			// Obtém o ano atual
 			String anoAtual = String.valueOf(java.time.Year.now().getValue());
 
 			// Caminho da pasta ano dentro da pasta uploads
-			Path pastaAno = Paths.get("uploads", anoAtual);
+			Path pastaAno = Path.of("uploads", anoAtual);
 
 			// Verifica se a pasta existe, se não existir, cria
 			if (!Files.exists(pastaAno)) {
@@ -178,7 +177,7 @@ public class UsuarioController {
 	}
 
 	@DeleteMapping(value = "/{id}", produces = "application/json")
-	public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+	public ResponseEntity<?> delete(@PathVariable Long id) {
 
 	
 		usuarioRepository.deleteById(id);

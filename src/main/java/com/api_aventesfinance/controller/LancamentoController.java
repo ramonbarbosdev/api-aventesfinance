@@ -85,7 +85,7 @@ public class LancamentoController extends BaseController<Lancamento, LancamentoD
 		Long ultima_sequencia = Optional.ofNullable(objetoRepository.obterSequencial()).orElse(0L);
 
 		Long sq_sequencia = ultima_sequencia + 1;
-		String resposta = String.format("%03d", sq_sequencia);
+		String resposta = "%03d".formatted(sq_sequencia);
 
 		return new ResponseEntity<>(Map.of("sequencia", resposta), HttpStatus.OK);
 	}
@@ -106,7 +106,7 @@ public class LancamentoController extends BaseController<Lancamento, LancamentoD
 		}
 
 		Long sq_sequencia = ultima_sequencia + 1;
-		String resposta = String.format("%03d", sq_sequencia);
+		String resposta = "%03d".formatted(sq_sequencia);
 
 		return new ResponseEntity<>(Map.of("sequencia", resposta), HttpStatus.OK);
 	}

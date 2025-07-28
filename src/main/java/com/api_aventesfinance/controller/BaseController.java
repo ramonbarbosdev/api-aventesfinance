@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -73,7 +72,7 @@ public abstract  class  BaseController<T,D,ID> {
     }
 
     @DeleteMapping(value = "/{id}", produces = "application/text" )
-	public ResponseEntity<?> delete (@PathVariable("id") Long id) throws Exception
+	public ResponseEntity<?> delete (@PathVariable Long id) throws Exception
 	{
         repository.deleteById((ID) id);
 			

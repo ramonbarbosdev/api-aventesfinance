@@ -1,6 +1,6 @@
 package com.api_aventesfinance.model;
 
-
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,12 +31,13 @@ import jakarta.persistence.UniqueConstraint;
 
 @Entity
 public class Usuario implements UserDetails {
-	
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
+
+    /**
+     * 
+     */
+    @Serial
+    private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
