@@ -33,9 +33,6 @@ public class ItemEmprestimo {
     @Column(unique = false, nullable = false)
     private String cd_itememprestimo;
 
-    @ManyToOne()
-    @JoinColumn(name = "id_emprestimo", insertable = false, updatable = false)
-    private Emprestimo emprestimo;
 
     @NotNull(message = "O Emprestimo obrigatorio")
     @Column(name = "id_emprestimo")

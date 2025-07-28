@@ -52,8 +52,6 @@ public class Emprestimo {
     private LocalDate dt_emprestimo;
 
     @Schema(enumAsRef = true, description = "Status do empréstimo (PENDENTE, QUITADO, ATRASADO)")
-    @NotNull(message = "O status é obrigatorio!")
-    @Column(unique = false, nullable = false)
     @Enumerated(EnumType.STRING)
     private StatusEmprestimo tp_status;
 

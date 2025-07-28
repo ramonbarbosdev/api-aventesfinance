@@ -9,6 +9,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.api_aventesfinance.enums.StatusEmprestimo;
 import com.api_aventesfinance.model.Categoria;
 import com.api_aventesfinance.model.CentroCusto;
 import com.api_aventesfinance.model.Emprestimo;
@@ -26,7 +27,5 @@ public interface EmprestimoRepository extends CrudRepository<Emprestimo, Long> {
 
     @Query(value = "SELECT cast(1 as boolean) as fl_existe FROM Emprestimo l WHERE l.cd_emprestimo = ?1 ")
     Boolean obterSequencialExistente(String codigo);
-
-   
 
 }

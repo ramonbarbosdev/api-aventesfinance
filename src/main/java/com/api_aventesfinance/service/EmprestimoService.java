@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.api_aventesfinance.enums.StatusEmprestimo;
 import com.api_aventesfinance.model.Emprestimo;
 import com.api_aventesfinance.model.ItemEmprestimo;
 import com.api_aventesfinance.model.ItemLancamento;
@@ -40,10 +41,10 @@ public class EmprestimoService {
 
         if (itens != null && itens.size() > 0) {
             for (ItemEmprestimo item : itens) {
-               item.setId_emprestimo(objeto.getId_emprestimo());
+                item.setId_emprestimo(objeto.getId_emprestimo());
 
                 if (item.getId_itememprestimo() == null || item.getId_itememprestimo() == 0) {
-                    item.setId_itememprestimo(null); 
+                    item.setId_itememprestimo(null);
                 }
 
                 validacaoItem(item, itens, objeto.getId_emprestimo());
@@ -52,12 +53,31 @@ public class EmprestimoService {
             }
         }
 
+        validacaoGeral(itens, objeto, valor_total);
+
         objeto.setVl_total(valor_total);
-        validarValorTotalItem(itens, valor_total);
         objeto.setItens(itens);
         objeto = repository.save(objeto);
 
         return objeto;
+    }
+
+    public void validacaoGeral(List<ItemEmprestimo> itens, Emprestimo objeto, Double valor_total) throws Exception {
+        validarValorTotalItem(itens, valor_total);
+        validarStatus(itens, objeto);
+
+    }
+
+    public void validarStatus(List<ItemEmprestimo> itens, Emprestimo objeto) throws Exception {
+
+        boolean todosQuitados = itens.stream().allMatch(i -> i.getTp_itemstatus() == StatusEmprestimo.QUITADO);
+
+        if (objeto.getId_emprestimo() != null) {
+            StatusEmprestimo statusNovo = todosQuitados ? StatusEmprestimo.QUITADO : StatusEmprestimo.PENDENTE;
+            objeto.setTp_status(statusNovo); 
+            repository.save(objeto);
+        }
+
     }
 
     public void validarValorTotalItem(List<ItemEmprestimo> listaItens, Double valor) throws Exception {
@@ -70,7 +90,7 @@ public class EmprestimoService {
         if (vl_total == null || vl_total == 0.0) {
             throw new Exception("Valor do lançamento não pode ser nulo ou zero");
         }
-        final double EPSILON = 0.00001; 
+        final double EPSILON = 0.00001;
 
         if (Math.abs(vl_total - valor) > EPSILON) {
             throw new Exception("Valor total dos itens não corresponde ao valor do lançamento");
