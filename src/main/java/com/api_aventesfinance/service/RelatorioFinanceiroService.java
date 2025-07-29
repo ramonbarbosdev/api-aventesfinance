@@ -19,19 +19,19 @@ public class RelatorioFinanceiroService {
         this.repository = repository;
     }
 
-    public List<FluxoCaixaDTO> obterFluxoCaixaMensal() {
-        return repository.buscarFluxoCaixaMensal();
+    public List<FluxoCaixaDTO> obterFluxoCaixaMensal(String competencia) {
+        return repository.buscarFluxoCaixaMensal(competencia);
     }
 
     public List<FluxoCaixaDiarioDTO> obterFluxoCaixaDiario(Long id) {
         return repository.buscarFluxoCaixaDiario( id);
     }
 
-    public List<ReceitaDespesaCategoriaDTO> obterReceitaDespesaCategoria() {
-        return repository.buscarReceitaDespesaCategoria();
+    public List<ReceitaDespesaCategoriaDTO> obterReceitaDespesaCategoria(String competencia) {
+        return repository.buscarReceitaDespesaCategoria( competencia);
     }
-    public List<SituacaoEmprestimoDTO> obterSituacaoEmprestimo() {
-        return repository.buscarSituacaoEmprestimo();
+    public List<SituacaoEmprestimoDTO> obterSituacaoEmprestimo(String competencia) {
+        return repository.buscarSituacaoEmprestimo( competencia);
     }
 
 }
