@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -56,6 +57,33 @@ public class EmprestimoController extends BaseController<Emprestimo, EmprestimoD
         service.salvarItens(objeto);
         return new ResponseEntity<>(objeto, HttpStatus.OK);
     }
+
+   @GetMapping(value = "/lista-por-competencia/", produces = "application/json")
+	public ResponseEntity<?> obterObjetoCompetenica(
+			@RequestHeader(value = "X-Competencia", required = false) String competencia) {
+
+		if (competencia == null || competencia.isEmpty()) {
+			return new ResponseEntity<>(Map.of("message", "Competência não foi definida!"), HttpStatus.FOUND);
+
+		}
+		List<Emprestimo> objeto = objetoRepository.buscarObjetoCompetancia(competencia);
+
+		return new ResponseEntity<>(objeto, HttpStatus.OK);
+	}
+
+   @GetMapping(value = "/lista-por-competencia/{id}", produces = "application/json")
+	public ResponseEntity<?> obterObjetoCompetenicaId(
+			@RequestHeader(value = "X-Competencia", required = false) String competencia, @PathVariable Long id) {
+
+		if (competencia == null || competencia.isEmpty()) {
+			return new ResponseEntity<>(Map.of("message", "Competência não foi definida!"), HttpStatus.FOUND);
+
+		}
+		Emprestimo objeto = objetoRepository.buscarObjetoCompetanciaId(competencia,id);
+
+		return new ResponseEntity<>(objeto, HttpStatus.OK);
+	}
+
 
     @GetMapping(value = "/sequencia", produces = "application/json")
     @Operation(summary = "Gerar sequencia")

@@ -28,4 +28,10 @@ public interface EmprestimoRepository extends CrudRepository<Emprestimo, Long> {
     @Query(value = "SELECT cast(1 as boolean) as fl_existe FROM Emprestimo l WHERE l.cd_emprestimo = ?1 ")
     Boolean obterSequencialExistente(String codigo);
 
+    @Query(value ="SELECT * FROM emprestimo WHERE dt_anomes = ?1", nativeQuery = true)
+    List<Emprestimo> buscarObjetoCompetancia(String competencia);
+
+    @Query(value ="SELECT * FROM emprestimo WHERE dt_anomes = ?1 AND id_emprestimo = ?2", nativeQuery = true)
+    Emprestimo buscarObjetoCompetanciaId(String competencia, Long id);
+
 }

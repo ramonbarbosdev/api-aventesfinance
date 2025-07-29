@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 public abstract  class  BaseController<T,D,ID> {
     
@@ -29,7 +30,7 @@ public abstract  class  BaseController<T,D,ID> {
 
      // ✅ Buscar todos os registros
      @GetMapping(value = "/", produces = "application/json")
-    public ResponseEntity<List<?>> obterTodos() 
+    public ResponseEntity<List<?>> obterTodos(@RequestHeader(value = "X-Competencia", required = false) String competencia) 
     {
         List<T> entidades = (List<T>) repository.findAll();
  

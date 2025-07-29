@@ -92,11 +92,11 @@ public class LancamentoService {
         }
     }
 
-    public Long excluir(Long id) {
+    public Long excluir(Long id, String competencia) {
 
         movimentacaoRepository.deleteByIdLancamento(id);
 
-        itemObjetoRepository.deleteByIdLancamento(id);
+        itemObjetoRepository.deleteByIdLancamento(id, competencia);
         repository.deleteById(id);
 
         return id;

@@ -35,4 +35,19 @@ public interface LancamentoRepository extends CrudRepository<Lancamento, Long> {
             """, nativeQuery = true)
     Optional<Lancamento> existeLancamentoPorCentroCustoMes(String dt_anomes, Long id_centrocusto, Long idLancamento);
 
+    @Query(value = """
+                SELECT *
+                FROM lancamento l
+                WHERE l.dt_anomes = ?1
+            """, nativeQuery = true)
+    List<Lancamento> buscarObjetoCompetancia(String competencia);
+
+    @Query(value = """
+                SELECT *
+                FROM lancamento l
+                WHERE l.dt_anomes = ?1
+                AND l.id_lancamento = ?2
+            """, nativeQuery = true)
+    Lancamento buscarObjetoCompetanciaId(String competencia, Long id);
+
 }

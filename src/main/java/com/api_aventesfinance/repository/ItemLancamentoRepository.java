@@ -34,7 +34,7 @@ public interface ItemLancamentoRepository extends CrudRepository<ItemLancamento,
 
     @Modifying
     @Query(value = "DELETE FROM item_lancamento  WHERE id_lancamento = ?1 ",  nativeQuery = true)
-    void deleteByIdLancamento(Long id);
+    void deleteByIdLancamento(Long id, String competencia);
    
 
 }

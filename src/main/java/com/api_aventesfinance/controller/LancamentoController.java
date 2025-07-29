@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,6 +25,7 @@ import com.api_aventesfinance.dto.CentroCustoDTO;
 import com.api_aventesfinance.dto.LancamentoDTO;
 import com.api_aventesfinance.model.Categoria;
 import com.api_aventesfinance.model.CentroCusto;
+import com.api_aventesfinance.model.Emprestimo;
 import com.api_aventesfinance.model.Lancamento;
 import com.api_aventesfinance.repository.CentroCustoRepository;
 import com.api_aventesfinance.repository.ItemLancamentoRepository;
@@ -34,7 +36,6 @@ import io.swagger.v3.oas.annotations.Operation;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.RequestParam;
-
 
 @RestController
 @RequestMapping(value = "/lancamento", produces = "application/json")
@@ -61,20 +62,44 @@ public class LancamentoController extends BaseController<Lancamento, LancamentoD
 		return new ResponseEntity<>(objeto, HttpStatus.OK);
 	}
 
-	@GetMapping(value = "/lancamento-existente/{id_centrocusto}/{dt_anomes}",  produces = "application/json")
-	public ResponseEntity<?> obterLancamentoExistente(@PathVariable Long id_centrocusto , @PathVariable String dt_anomes) {
+	@GetMapping(value = "/lista-por-competencia/", produces = "application/json")
+	public ResponseEntity<?> obterObjetoCompetenica(
+			@RequestHeader(value = "X-Competencia", required = false) String competencia) {
 
-		Optional<Lancamento> objeto = objetoRepository.existeLancamentoPorCentroCustoMes(dt_anomes,
-                id_centrocusto, null);
+		if (competencia == null || competencia.isEmpty()) {
+			return new ResponseEntity<>(Map.of("message", "Competência não foi definida!"), HttpStatus.FOUND);
+
+		}
+		List<Lancamento> objeto = objetoRepository.buscarObjetoCompetancia(competencia);
+
 		return new ResponseEntity<>(objeto, HttpStatus.OK);
 	}
-	
+
+	@GetMapping(value = "/lista-por-competencia/{id}", produces = "application/json")
+	public ResponseEntity<?> obterObjetoCompetenicaId(
+			@RequestHeader(value = "X-Competencia", required = false) String competencia, @PathVariable Long id) {
+
+		if (competencia == null || competencia.isEmpty()) {
+			return new ResponseEntity<>(Map.of("message", "Competência não foi definida!"), HttpStatus.FOUND);
+
+		}
+		Lancamento objeto = objetoRepository.buscarObjetoCompetanciaId(competencia, id);
+
+		return new ResponseEntity<>(objeto, HttpStatus.OK);
+	}
+
+	@GetMapping(value = "/lancamento-existente/{id_centrocusto}/{dt_anomes}", produces = "application/json")
+	public ResponseEntity<?> obterLancamentoExistente(@PathVariable Long id_centrocusto, @PathVariable String dt_anomes) {
+
+		Optional<Lancamento> objeto = objetoRepository.existeLancamentoPorCentroCustoMes(dt_anomes,
+				id_centrocusto, null);
+		return new ResponseEntity<>(objeto, HttpStatus.OK);
+	}
 
 	@DeleteMapping(value = "/deletar/{id}", produces = "application/json")
-	public ResponseEntity<?> deletar(@PathVariable Long id) {
+	public ResponseEntity<?> deletar(@PathVariable Long id,@RequestHeader(value = "X-Competencia", required = false) String competencia) {
 
-
-		lancamentoService.excluir(id);
+		lancamentoService.excluir(id, competencia);
 		return new ResponseEntity<>(Map.of("message", "Deletado com sucesso!"), HttpStatus.OK);
 
 	}
