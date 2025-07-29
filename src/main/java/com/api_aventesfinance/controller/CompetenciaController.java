@@ -3,18 +3,21 @@ package com.api_aventesfinance.controller;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.api_aventesfinance.enums.StatusCompetencia;
 import com.api_aventesfinance.model.Competencia;
 import com.api_aventesfinance.service.CompetenciaService;
 
@@ -49,12 +52,12 @@ public class CompetenciaController {
         return new ResponseEntity<>(objetos, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/verificar-status", produces = "application/json")
-    public ResponseEntity<?> teste(
-            @RequestHeader(value = "X-Competencia", required = false) String competencia) {
-        System.out.println("Header X-Competencia: " + competencia);
-        // use como quiser
-        return ResponseEntity.ok(competencia);
+    @GetMapping(value = "/alterar-status/{id}", produces = "application/json")
+    public ResponseEntity<?> alterarStatus(@PathVariable Long  id) {
+     
+        StatusCompetencia novo = service.alterarStatusCompetencia(id);
+       return new ResponseEntity<>(Map.of("message", "Competência "+novo), HttpStatus.OK);
     }
+
 
 }

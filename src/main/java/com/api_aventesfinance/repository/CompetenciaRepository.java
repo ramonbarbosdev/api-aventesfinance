@@ -17,4 +17,5 @@ public interface CompetenciaRepository extends CrudRepository<Competencia, Long>
 
     @Query(value = "SELECT * FROM competencia WHERE cd_competencia = ?1", nativeQuery = true)
     Competencia verificarStatusCompetencia(String codigo);
+
 }

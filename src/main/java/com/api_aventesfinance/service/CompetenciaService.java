@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -55,7 +56,7 @@ public class CompetenciaService {
 
         if (objeto != null) {
             if (objeto.getTp_status().equals(StatusCompetencia.ABERTO)) {
-                
+
             }
 
             if (objeto.getTp_status().equals(StatusCompetencia.FECHADO)) {
@@ -66,4 +67,15 @@ public class CompetenciaService {
 
     }
 
+    public StatusCompetencia alterarStatusCompetencia(Long id) {
+        Optional<Competencia> objeto = repository.findById(id);
+
+        StatusCompetencia antigo = objeto.get().getTp_status();
+        StatusCompetencia novo = antigo.equals(StatusCompetencia.ABERTO) ? StatusCompetencia.FECHADO
+                : StatusCompetencia.ABERTO;
+        objeto.get().setTp_status(novo);
+        repository.save(objeto.get());
+
+        return novo;
+    }
 }

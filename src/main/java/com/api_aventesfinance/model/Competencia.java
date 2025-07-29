@@ -36,7 +36,7 @@ public class Competencia {
     private LocalDate dt_fim;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
+    @Column(name = "tp_status", nullable = false)
     private StatusCompetencia tp_status;
 
     @Column(name = "dt_cadatros", nullable = false, updatable = false)
