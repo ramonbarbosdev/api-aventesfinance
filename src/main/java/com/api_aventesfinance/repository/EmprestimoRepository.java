@@ -22,11 +22,11 @@ import jakarta.transaction.Transactional;
 @Transactional
 public interface EmprestimoRepository extends CrudRepository<Emprestimo, Long> {
 
-    @Query(value = "SELECT CASE WHEN MAX(c.cd_emprestimo) IS NULL THEN '0' ELSE MAX(c.cd_emprestimo) END FROM Emprestimo c", nativeQuery = true)
-    Long obterSequencial();
+    @Query(value = "SELECT CASE WHEN MAX(c.cd_emprestimo) IS NULL THEN '0' ELSE MAX(c.cd_emprestimo) END FROM Emprestimo c where c.dt_anomes = ?1", nativeQuery = true)
+    Long obterSequencial(String competencia);
 
-    @Query(value = "SELECT cast(1 as boolean) as fl_existe FROM Emprestimo l WHERE l.cd_emprestimo = ?1 ")
-    Boolean obterSequencialExistente(String codigo);
+    @Query(value = "SELECT cast(1 as boolean) as fl_existe FROM Emprestimo l WHERE l.cd_emprestimo = ?1  and  l.dt_anomes = ?2 ")
+    Boolean obterSequencialExistente(String codigo, String competencia);
 
     @Query(value ="SELECT * FROM emprestimo WHERE dt_anomes = ?1", nativeQuery = true)
     List<Emprestimo> buscarObjetoCompetancia(String competencia);

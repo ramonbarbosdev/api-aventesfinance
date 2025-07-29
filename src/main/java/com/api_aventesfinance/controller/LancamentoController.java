@@ -97,7 +97,7 @@ public class LancamentoController extends BaseController<Lancamento, LancamentoD
 	}
 
 	@DeleteMapping(value = "/deletar/{id}", produces = "application/json")
-	public ResponseEntity<?> deletar(@PathVariable Long id,@RequestHeader(value = "X-Competencia", required = false) String competencia) {
+	public ResponseEntity<?> deletar(@PathVariable Long id,@RequestHeader(value = "X-Competencia", required = false) String competencia) throws Exception {
 
 		lancamentoService.excluir(id, competencia);
 		return new ResponseEntity<>(Map.of("message", "Deletado com sucesso!"), HttpStatus.OK);
@@ -106,8 +106,8 @@ public class LancamentoController extends BaseController<Lancamento, LancamentoD
 
 	@GetMapping(value = "/sequencia", produces = "application/json")
 	@Operation(summary = "Gerar sequencia")
-	public ResponseEntity<?> obterSequencia() {
-		Long ultima_sequencia = Optional.ofNullable(objetoRepository.obterSequencial()).orElse(0L);
+	public ResponseEntity<?> obterSequencia(@RequestHeader(value = "X-Competencia", required = false) String competencia) {
+		Long ultima_sequencia = Optional.ofNullable(objetoRepository.obterSequencial(competencia)).orElse(0L);
 
 		Long sq_sequencia = ultima_sequencia + 1;
 		String resposta = "%03d".formatted(sq_sequencia);

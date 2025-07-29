@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.api_aventesfinance.dto.LancamentoDTO;
 import com.api_aventesfinance.enums.TipoCategoria;
 import com.api_aventesfinance.model.Categoria;
+import com.api_aventesfinance.model.Emprestimo;
 import com.api_aventesfinance.model.ItemLancamento;
 import com.api_aventesfinance.model.Lancamento;
 import com.api_aventesfinance.repository.CategoriaRepository;
@@ -35,6 +36,9 @@ public class LancamentoService {
 
     @Autowired
     private MovimentacaoLancamentoRepository movimentacaoRepository;
+
+    @Autowired
+    private CompetenciaService competenciaService;
 
     @Transactional(rollbackFor = Exception.class)
     public Lancamento salvarItens(Lancamento objeto) throws Exception {
@@ -92,10 +96,12 @@ public class LancamentoService {
         }
     }
 
-    public Long excluir(Long id, String competencia) {
+    public Long excluir(Long id, String competencia) throws Exception {
+
+        Optional<Lancamento> objeto = repository.findById(id);
+        competenciaService.verificarStatusCompetencia(objeto.get().getDt_anomes());
 
         movimentacaoRepository.deleteByIdLancamento(id);
-
         itemObjetoRepository.deleteByIdLancamento(id, competencia);
         repository.deleteById(id);
 
@@ -104,6 +110,7 @@ public class LancamentoService {
 
     public void validarObjeto(Lancamento objeto) throws Exception {
 
+        competenciaService.verificarStatusCompetencia(objeto.getDt_anomes());
         validarSequencia(objeto.getId_lancamento(), objeto.getCd_lancamento(), objeto.getDt_anomes());
 
         Optional<Lancamento> fl_existe = repository.existeLancamentoPorCentroCustoMes(

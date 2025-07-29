@@ -44,10 +44,26 @@ public class CompetenciaService {
     }
 
     public List<Competencia> buscarTodos() {
-        
 
         List<Competencia> objetos = (List<Competencia>) repository.findAll();
         return objetos;
+    }
+
+    public void verificarStatusCompetencia(String codigo) throws Exception {
+
+        Competencia objeto = repository.verificarStatusCompetencia(codigo);
+
+        if (objeto != null) {
+            if (objeto.getTp_status().equals(StatusCompetencia.ABERTO)) {
+                
+            }
+
+            if (objeto.getTp_status().equals(StatusCompetencia.FECHADO)) {
+                throw new Exception("A Competência selecionada está fechada.");
+            }
+
+        }
+
     }
 
 }

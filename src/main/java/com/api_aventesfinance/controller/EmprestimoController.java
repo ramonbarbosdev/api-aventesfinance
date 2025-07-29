@@ -87,8 +87,8 @@ public class EmprestimoController extends BaseController<Emprestimo, EmprestimoD
 
     @GetMapping(value = "/sequencia", produces = "application/json")
     @Operation(summary = "Gerar sequencia")
-    public ResponseEntity<?> obterSequencia() {
-        Long ultima_sequencia = Optional.ofNullable(objetoRepository.obterSequencial()).orElse(0L);
+    public ResponseEntity<?> obterSequencia(@RequestHeader(value = "X-Competencia", required = false) String competencia) {
+        Long ultima_sequencia = Optional.ofNullable(objetoRepository.obterSequencial(competencia)).orElse(0L);
 
         Long sq_sequencia = ultima_sequencia + 1;
         String resposta = "%03d".formatted(sq_sequencia);
@@ -128,7 +128,7 @@ public class EmprestimoController extends BaseController<Emprestimo, EmprestimoD
     }
 
     @DeleteMapping(value = "/deletar/{id}", produces = "application/json")
-    public ResponseEntity<?> deletar(@PathVariable Long id) {
+    public ResponseEntity<?> deletar(@PathVariable Long id) throws Exception {
 
         service.excluir(id);
         return new ResponseEntity<>(Map.of("message", "Deletado com sucesso!"), HttpStatus.OK);
