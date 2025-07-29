@@ -64,6 +64,10 @@ public class CompetenciaService {
             }
 
         }
+        else
+        {
+            throw new Exception("Não existe Competência aberta.");
+        }
 
     }
 

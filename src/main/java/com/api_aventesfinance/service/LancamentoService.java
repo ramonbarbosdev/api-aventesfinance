@@ -61,7 +61,7 @@ public class LancamentoService {
                 item.setId_lancamento(objeto.getId_lancamento());
 
                 if (item.getId_itemlancamento() == null || item.getId_itemlancamento() == 0) {
-                    item.setId_itemlancamento(null); // Força o Hibernate a tratar como novo
+                    item.setId_itemlancamento(null); 
                 }
 
                 validacaoCadastrar(item, itens, objeto.getId_lancamento());
@@ -75,7 +75,7 @@ public class LancamentoService {
         objeto.setItens(itens);
         objeto = repository.save(objeto);
 
-        movimentacaoService.atualizarMovimentacaoLancamento(objeto.getId_lancamento());
+        // movimentacaoService.atualizarMovimentacaoLancamento(objeto.getId_lancamento());
 
         return objeto;
     }
@@ -94,18 +94,6 @@ public class LancamentoService {
                 }
             }
         }
-    }
-
-    public Long excluir(Long id, String competencia) throws Exception {
-
-        Optional<Lancamento> objeto = repository.findById(id);
-        competenciaService.verificarStatusCompetencia(objeto.get().getDt_anomes());
-
-        movimentacaoRepository.deleteByIdLancamento(id);
-        itemObjetoRepository.deleteByIdLancamento(id, competencia);
-        repository.deleteById(id);
-
-        return id;
     }
 
     public void validarObjeto(Lancamento objeto) throws Exception {
@@ -195,5 +183,19 @@ public class LancamentoService {
         }
 
     }
+
+    
+    public Long excluir(Long id, String competencia) throws Exception {
+
+        Optional<Lancamento> objeto = repository.findById(id);
+        competenciaService.verificarStatusCompetencia(objeto.get().getDt_anomes());
+
+        // movimentacaoRepository.deleteByIdLancamento(id);
+        itemObjetoRepository.deleteByIdLancamento(id, competencia);
+        repository.deleteById(id);
+
+        return id;
+    }
+
 
 }
