@@ -30,7 +30,7 @@ public abstract  class  BaseController<T,D,ID> {
 
      // ✅ Buscar todos os registros
      @GetMapping(value = "/", produces = "application/json")
-    public ResponseEntity<List<?>> obterTodos(@RequestHeader(value = "X-Competencia", required = false) String competencia) 
+    public ResponseEntity<List<?>> obterTodos() 
     {
         List<T> entidades = (List<T>) repository.findAll();
  
