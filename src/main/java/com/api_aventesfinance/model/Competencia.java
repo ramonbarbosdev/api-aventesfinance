@@ -3,7 +3,6 @@ package com.api_aventesfinance.model;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-
 import com.api_aventesfinance.enums.StatusCompetencia;
 
 import jakarta.persistence.Column;
@@ -13,6 +12,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
@@ -26,7 +27,7 @@ public class Competencia {
     @SequenceGenerator(name = "seq_competencia", sequenceName = "seq_competencia", allocationSize = 1)
     private Long id_competencia;
 
-    @Column(name = "cd_competencia", unique = true, nullable = false, length = 6)
+    @Column(name = "cd_competencia", unique = false, nullable = false, length = 6)
     private String cd_competencia;
 
     @Column(name = "dt_inicio", nullable = false)
@@ -39,12 +40,35 @@ public class Competencia {
     @Column(name = "tp_status", nullable = false)
     private StatusCompetencia tp_status;
 
+    @ManyToOne()
+    @JoinColumn(name = "id_cliente", insertable = false, updatable = false)
+    private Cliente cliente;
+
+    @Column(name = "id_cliente")
+    private Long id_cliente;
+
     @Column(name = "dt_cadatros", nullable = false, updatable = false)
     private LocalDateTime dt_cadatros;
 
     @PrePersist
     protected void onCreate() {
         this.dt_cadatros = LocalDateTime.now();
+    }
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
+    }
+
+    public Long getId_cliente() {
+        return id_cliente;
+    }
+
+    public void setId_cliente(Long id_cliente) {
+        this.id_cliente = id_cliente;
     }
 
     public Long getId_competencia() {
@@ -94,7 +118,5 @@ public class Competencia {
     public void setDt_cadatros(LocalDateTime dt_cadatros) {
         this.dt_cadatros = dt_cadatros;
     }
-
-    
 
 }

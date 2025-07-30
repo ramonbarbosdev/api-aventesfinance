@@ -34,6 +34,7 @@ import com.api_aventesfinance.model.UsuarioCliente;
 import com.api_aventesfinance.repository.CategoriaRepository;
 import com.api_aventesfinance.repository.ClienteRepository;
 import com.api_aventesfinance.repository.UsuarioClienteRepository;
+import com.api_aventesfinance.repository.UsuarioRepository;
 
 import ch.qos.logback.core.model.Model;
 import io.swagger.v3.oas.annotations.Operation;
@@ -55,6 +56,9 @@ public class ClienteController extends BaseController<Cliente, ClienteDTO, Long>
 
 	@Autowired
 	private UsuarioClienteRepository usuarioClienteRepository;
+
+	@Autowired
+	private UsuarioRepository usuarioRepository;
 
 	public ClienteController(CrudRepository<Cliente, Long> repository) {
 		super(repository);
@@ -106,6 +110,29 @@ public class ClienteController extends BaseController<Cliente, ClienteDTO, Long>
 	public ResponseEntity<List<?>> buscarUsuarioPorCliente(@PathVariable Long id_cliente) {
 
 		List<UsuarioCliente> objetos = usuarioClienteRepository.findAllByCliente(id_cliente);
+
+		return new ResponseEntity<>(objetos, HttpStatus.OK);
+	}
+
+	@GetMapping(value = "/obter-usuario-logado/{id_usuario}/{id_cliente}", produces = "application/json")
+	public ResponseEntity<?> buscarUsuarioPorClienteUsuario(@PathVariable Long id_usuario,@PathVariable Long id_cliente) {
+
+		UsuarioCliente objeto = usuarioClienteRepository.findByUsuarioByCliente(id_usuario,id_cliente);
+
+		return new ResponseEntity<>(objeto, HttpStatus.OK);
+	}
+
+	@GetMapping(value = "/obter-cliente-usuario/{login}", produces = "application/json")
+	public ResponseEntity<List<?>> buscarClientePorUsuario(@PathVariable String login) throws Exception {
+
+		Usuario usuario = usuarioRepository.findUserByLogin(login);
+
+		if(usuario == null)
+		{
+			throw new Exception("O usuario informado não possui acesso no sistema.");
+		}
+
+		List<UsuarioCliente> objetos = usuarioClienteRepository.findAllByUsuario(usuario.getId());
 
 		return new ResponseEntity<>(objetos, HttpStatus.OK);
 	}

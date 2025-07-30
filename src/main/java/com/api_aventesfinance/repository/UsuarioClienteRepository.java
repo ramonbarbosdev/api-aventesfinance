@@ -23,9 +23,12 @@ public interface UsuarioClienteRepository extends CrudRepository<UsuarioCliente,
     @Query(value = "SELECT * FROM usuario_cliente WHERE id_usuario = ?1 AND id_cliente = ?2", nativeQuery = true)
     Optional<UsuarioCliente> verificarExistencia(Long id_usuario, Long id_cliente);
 
-    @Query(value = "DELETE FROM usuario_cliente WHERE id_usuario = ?1 AND id_cliente = ?2", nativeQuery = true)
-    void deleteByUsuarioByCliente(Long id_usuario, Long id_cliente);
+    @Query(value = "SELECT * FROM usuario_cliente WHERE id_usuario = ?1 AND id_cliente = ?2", nativeQuery = true)
+    UsuarioCliente findByUsuarioByCliente(Long id_usuario, Long id_cliente);
 
     @Query(value = "SELECT * FROM usuario_cliente WHERE  id_cliente = ?1", nativeQuery = true)
-    List<UsuarioCliente> findAllByCliente(Long id_cliente);
+    List<UsuarioCliente> findAllByCliente(Long id);
+
+    @Query(value = "SELECT * FROM usuario_cliente WHERE  id_usuario = ?1", nativeQuery = true)
+    List<UsuarioCliente> findAllByUsuario(Long id);
 }

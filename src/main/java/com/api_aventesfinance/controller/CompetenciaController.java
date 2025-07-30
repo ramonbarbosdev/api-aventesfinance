@@ -33,12 +33,12 @@ public class CompetenciaController {
     private CompetenciaService service;
 
     @PostMapping(value = "/criar", produces = "application/json")
-    public ResponseEntity<Competencia> criar(@RequestParam("data") String dataBr) {
+    public ResponseEntity<Competencia> criar(@RequestParam("data") String dataBr,  Long id_cliente) {
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         LocalDate data = LocalDate.parse(dataBr, formatter);
 
-        Competencia c = service.criarCompetencia(data);
+        Competencia c = service.criarCompetencia(data, id_cliente);
         return ResponseEntity.ok(c);
     }
 
@@ -48,18 +48,20 @@ public class CompetenciaController {
     // }
 
     @GetMapping(value = "/", produces = "application/json")
-    public ResponseEntity<List<?>> todos() {
-        List<Competencia> objetos = service.buscarTodos();
+    public ResponseEntity<List<?>> todos(@RequestHeader(value = "X-Cliente", required = false) String id_cliente) {
+
+
+        List<Competencia> objetos = service.buscarTodos(Long.valueOf(id_cliente));
         return new ResponseEntity<>(objetos, HttpStatus.OK);
     }
     @GetMapping(value = "/atual", produces = "application/json")
-    public ResponseEntity<?> competenciaID(@RequestHeader(value = "X-Competencia", required = false) String competencia) {
-        Competencia objeto = service.buscarPorCompetencia(competencia);
+    public ResponseEntity<?> competenciaID(@RequestHeader(value = "X-Competencia", required = false) String competencia, @RequestHeader(value = "X-Cliente", required = false) String id_cliente) {
+        Competencia objeto = service.buscarPorCompetencia(competencia, Long.valueOf(id_cliente));
         return new ResponseEntity<>(objeto, HttpStatus.OK);
     }
 
     @GetMapping(value = "/alterar-status/{id}", produces = "application/json")
-    public ResponseEntity<?> alterarStatus(@PathVariable Long  id) {
+    public ResponseEntity<?> alterarStatus(@PathVariable Long  id,  @RequestHeader(value = "X-Cliente", required = false) String id_cliente) {
      
         StatusCompetencia novo = service.alterarStatusCompetencia(id);
        return new ResponseEntity<>(Map.of("message", "Competência "+novo), HttpStatus.OK);

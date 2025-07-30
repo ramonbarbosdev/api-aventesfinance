@@ -19,13 +19,13 @@ public class CompetenciaService {
     @Autowired
     private CompetenciaRepository repository;
 
-    public Competencia criarCompetencia(LocalDate data) {
+    public Competencia criarCompetencia(LocalDate data, Long id_cliente) {
 
         YearMonth ym = YearMonth.from(data);
 
         String codigo = ym.format(DateTimeFormatter.ofPattern("yyyyMM"));
 
-        if (repository.findByCodigo(codigo).isPresent()) {
+        if (repository.findByCodigo(codigo, id_cliente).isPresent()) {
             throw new RuntimeException("Competência já existe: " + codigo);
         }
 
@@ -34,24 +34,25 @@ public class CompetenciaService {
         c.setDt_inicio(ym.atDay(1));
         c.setDt_fim(ym.atEndOfMonth());
         c.setTp_status(StatusCompetencia.ABERTO);
+        c.setId_cliente(id_cliente);
 
         return repository.save(c);
     }
 
-    public Competencia buscarAtual() {
+    public Competencia buscarAtual(Long id_cliente) {
         String codigoAtual = YearMonth.now().format(DateTimeFormatter.ofPattern("yyyyMM"));
-        return repository.findByCodigo(codigoAtual)
+        return repository.findByCodigo(codigoAtual, id_cliente)
                 .orElseThrow(() -> new RuntimeException("Competência atual não cadastrada"));
     }
 
-    public List<Competencia> buscarTodos() {
+    public List<Competencia> buscarTodos(Long id_cliente) {
 
-        List<Competencia> objetos = (List<Competencia>) repository.findAll();
+        List<Competencia> objetos = (List<Competencia>) repository.findByCliente(id_cliente);
         return objetos;
     }
-    public Competencia buscarPorCompetencia(String competencia) {
+    public Competencia buscarPorCompetencia(String competencia, Long id_cliente) {
 
-        Optional<Competencia> objeto = repository.findByCodigo(competencia);
+        Optional<Competencia> objeto = repository.findByCodigo(competencia, id_cliente);
         return objeto.get();
     }
 
