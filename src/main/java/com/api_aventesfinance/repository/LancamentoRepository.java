@@ -32,7 +32,7 @@ public interface LancamentoRepository extends CrudRepository<Lancamento, Long> {
                 WHERE l.dt_anomes = ?1
                   AND l.id_centrocusto = ?2
                   AND (:idLancamento IS NULL OR l.id_lancamento <> :idLancamento)
-                  AND l.id_cliente = ?4
+                  AND l.id_cliente = ?3
             """, nativeQuery = true)
     Optional<Lancamento> existeLancamentoPorCentroCustoMes(String dt_anomes, Long id_centrocusto, Long idLancamento, Long id_cliente);
 

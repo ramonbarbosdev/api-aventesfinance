@@ -29,9 +29,10 @@ public class RelatorioFinanceiroController {
     private RelatorioFinanceiroService service;
 
     @GetMapping(value = "/fluxo-caixa-mensal", produces = "application/json")
-    public ResponseEntity<List<?>> obterFluxoCaixaMensal(@RequestHeader(value = "X-Competencia", required = false) String competencia) {
+    public ResponseEntity<List<?>> obterFluxoCaixaMensal(@RequestHeader(value = "X-Competencia", required = false) String competencia,
+    @RequestHeader(value = "X-Cliente", required = false) String id_cliente) {
 
-        List<FluxoCaixaDTO> resultado = service.obterFluxoCaixaMensal(competencia);
+        List<FluxoCaixaDTO> resultado = service.obterFluxoCaixaMensal(competencia, Long.valueOf(id_cliente));
 
         return new ResponseEntity<>(resultado, HttpStatus.CREATED);
     }
@@ -44,17 +45,19 @@ public class RelatorioFinanceiroController {
     }
 
     @GetMapping(value = "/fluxo-categoria", produces = "application/json")
-    public ResponseEntity<List<?>> obterReceitaDespesaCategoria(@RequestHeader(value = "X-Competencia", required = false) String competencia) {
+    public ResponseEntity<List<?>> obterReceitaDespesaCategoria(@RequestHeader(value = "X-Competencia", required = false) String competencia,
+        @RequestHeader(value = "X-Cliente", required = false) String id_cliente) {
 
-       List<ReceitaDespesaCategoriaDTO> resultado = service.obterReceitaDespesaCategoria(competencia);
+       List<ReceitaDespesaCategoriaDTO> resultado = service.obterReceitaDespesaCategoria(competencia, Long.valueOf(id_cliente));
 
         return new ResponseEntity<>(resultado, HttpStatus.CREATED);
     }
 
     @GetMapping(value = "/situacao-emprestimo", produces = "application/json")
-    public ResponseEntity<List<?>> obterSituacaoEmprestimo(@RequestHeader(value = "X-Competencia", required = false) String competencia) {
+    public ResponseEntity<List<?>> obterSituacaoEmprestimo(@RequestHeader(value = "X-Competencia", required = false) String competencia,
+     @RequestHeader(value = "X-Cliente", required = false) String id_cliente) {
 
-       List<SituacaoEmprestimoDTO> resultado = service.obterSituacaoEmprestimo(competencia);
+       List<SituacaoEmprestimoDTO> resultado = service.obterSituacaoEmprestimo(competencia, Long.valueOf(id_cliente));
 
         return new ResponseEntity<>(resultado, HttpStatus.CREATED);
     }

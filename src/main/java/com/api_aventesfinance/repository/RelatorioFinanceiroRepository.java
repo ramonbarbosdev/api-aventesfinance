@@ -21,7 +21,7 @@ public class RelatorioFinanceiroRepository {
     @PersistenceContext
     private EntityManager em;
 
-    public List<FluxoCaixaDTO> buscarFluxoCaixaMensal(String competencia) {
+    public List<FluxoCaixaDTO> buscarFluxoCaixaMensal(String competencia, Long id_cliente) {
         String sql = """
                 WITH lancamento_temp AS (
                         SELECT
@@ -31,7 +31,8 @@ public class RelatorioFinanceiroRepository {
                         SUM(vl_receita) AS vl_receita,
                         SUM(vl_despesa) AS vl_despesa,
                         SUM(vl_receita) - SUM(vl_despesa) AS vl_saldo,
-                        MAX(dt_anomes) AS dt_anomes
+                        MAX(dt_anomes) AS dt_anomes,
+                         MAX(id_cliente) AS id_cliente
                         FROM (
                         SELECT
                             l.id_lancamento,
@@ -39,7 +40,8 @@ public class RelatorioFinanceiroRepository {
                             l.id_centrocusto,
                             0.00 AS vl_receita,
                             0.00 AS vl_despesa,
-                            l.dt_anomes
+                            l.dt_anomes,
+                            l.id_cliente
                         FROM lancamento l
 
                         UNION ALL
@@ -50,7 +52,8 @@ public class RelatorioFinanceiroRepository {
                             NULL AS id_centrocusto,
                             il.vl_itemlancamento AS vl_receita,
                             0.00 AS vl_despesa,
-                            NULL AS dt_anomes
+                            NULL AS dt_anomes,
+                             null as id_cliente
                         FROM item_lancamento il
                         JOIN categoria c ON il.id_categoria = c.id_categoria
                         WHERE c.tp_categoria = 'RECEITA'
@@ -63,7 +66,8 @@ public class RelatorioFinanceiroRepository {
                             NULL AS id_centrocusto,
                             0.00 AS vl_receita,
                             il.vl_itemlancamento AS vl_despesa,
-                            NULL AS dt_anomes
+                            NULL AS dt_anomes,
+                             null as id_cliente
                         FROM item_lancamento il
                         JOIN categoria c ON il.id_categoria = c.id_categoria
                         WHERE c.tp_categoria = 'DESPESA'
@@ -84,13 +88,14 @@ public class RelatorioFinanceiroRepository {
                 FROM lancamento_temp lt
                 JOIN centro_custo cc ON cc.id_centrocusto = lt.id_centrocusto
                 WHERE dt_anomes = :competencia
+                and id_cliente = :id_cliente
                 GROUP BY lt.dt_anomes, lt.id_centrocusto, cc.nm_centrocusto, id_lancamento
                 ORDER BY lt.dt_anomes
-
                                           """;
 
         List<Object[]> results = em.createNativeQuery(sql)
                 .setParameter("competencia", competencia)
+                .setParameter("id_cliente", id_cliente)
                 .getResultList();
 
         return results.stream().map(r -> new FluxoCaixaDTO(
@@ -174,7 +179,7 @@ public class RelatorioFinanceiroRepository {
                 (Double) r[4])).toList();
     }
 
-    public List<ReceitaDespesaCategoriaDTO> buscarReceitaDespesaCategoria(String competencia) {
+    public List<ReceitaDespesaCategoriaDTO> buscarReceitaDespesaCategoria(String competencia, Long id_cliente) {
         String sql = """
 
 
@@ -186,6 +191,7 @@ public class RelatorioFinanceiroRepository {
                    JOIN categoria c ON il.id_categoria = c.id_categoria
                    join lancamento l on il.id_lancamento = l.id_lancamento
                 where dt_anomes = :competencia
+                and l.id_cliente = :id_cliente
                    GROUP BY c.nm_categoria, c.tp_categoria
                    ORDER BY c.tp_categoria, total DESC
 
@@ -193,6 +199,7 @@ public class RelatorioFinanceiroRepository {
 
         List<Object[]> results = em.createNativeQuery(sql)
                 .setParameter("competencia", competencia)
+                .setParameter("id_cliente", id_cliente)
                 .getResultList();
 
         return results.stream().map(r -> new ReceitaDespesaCategoriaDTO(
@@ -203,7 +210,7 @@ public class RelatorioFinanceiroRepository {
         )).toList();
     }
 
-    public List<SituacaoEmprestimoDTO> buscarSituacaoEmprestimo(String competencia) {
+    public List<SituacaoEmprestimoDTO> buscarSituacaoEmprestimo(String competencia, Long id_cliente) {
         String sql = """
                                 SELECT
                   e.id_emprestimo,
@@ -216,7 +223,8 @@ public class RelatorioFinanceiroRepository {
                   e.vl_total - COALESCE(SUM(CASE WHEN ie.tp_itemstatus = 'QUITADO' THEN ie.vl_emprestimo ELSE 0 END), 0) AS em_aberto
                 FROM emprestimo e
                 LEFT JOIN item_emprestimo ie ON ie.id_emprestimo = e.id_emprestimo
-                where dt_anomes = :competencia
+                where e.dt_anomes = :competencia
+                and e.id_cliente = :id_cliente 
                 GROUP BY e.id_emprestimo
                 ORDER BY e.dt_emprestimo DESC;
 
@@ -225,6 +233,7 @@ public class RelatorioFinanceiroRepository {
 
         List<Object[]> results = em.createNativeQuery(sql)
                 .setParameter("competencia", competencia)
+                .setParameter("id_cliente", id_cliente)
                 .getResultList();
 
         return results.stream().map(r -> new SituacaoEmprestimoDTO(

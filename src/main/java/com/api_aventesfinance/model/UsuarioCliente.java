@@ -37,7 +37,7 @@ public class UsuarioCliente {
     private Usuario usuario;
 
     @NotNull(message = "O Usuario é obrigatória")
-    @Column(name = "id_usuario")
+    @Column(name = "id_usuario",  unique = false)
     private Long id_usuario;
 
     // @JsonIgnore
@@ -46,7 +46,7 @@ public class UsuarioCliente {
     private Cliente cliente;
 
     @NotNull(message = "O Cliente é obrigatória")
-    @Column(name = "id_cliente")
+    @Column(name = "id_cliente",  unique = false)
     private Long id_cliente;
 
     @Schema(enumAsRef = true, description = "Tipo do empréstimo (ATIVO, INATIVO)")
