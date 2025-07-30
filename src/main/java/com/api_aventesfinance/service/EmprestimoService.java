@@ -30,11 +30,12 @@ public class EmprestimoService {
     private CompetenciaService competenciaService;
 
     @Transactional(rollbackFor = Exception.class)
-    public Emprestimo salvarItens(Emprestimo objeto) throws Exception {
+    public Emprestimo salvarItens(Emprestimo objeto, Long id_cliente) throws Exception {
 
         objeto.setVl_total(0.0);
         Double valor_total = 0.0;
         objeto.setDt_anomes(DataUtils.formatarAnoMes(objeto.getDt_emprestimo()));
+        objeto.setId_cliente(id_cliente);
 
         List<ItemEmprestimo> itens = objeto.getItens();
         objeto.setItens(null);
@@ -118,10 +119,10 @@ public class EmprestimoService {
         }
     }
 
-    public void validarObjeto(Emprestimo objeto) throws Exception {
+    public void validarObjeto(Emprestimo objeto ) throws Exception {
 
-        validarSequencia(objeto.getId_emprestimo(), objeto.getCd_emprestimo(), objeto.getDt_anomes());
-        competenciaService.verificarStatusCompetencia(objeto.getDt_anomes());
+        validarSequencia(objeto.getId_emprestimo(), objeto.getCd_emprestimo(), objeto.getDt_anomes(), objeto.getId_cliente());
+        competenciaService.verificarStatusCompetencia(objeto.getDt_anomes(), objeto.getId_cliente());
 
     }
 
@@ -149,19 +150,19 @@ public class EmprestimoService {
     public void excluir(Long id) throws Exception {
 
         Optional<Emprestimo> objeto = repository.findById(id);
-        competenciaService.verificarStatusCompetencia(objeto.get().getDt_anomes());
+        competenciaService.verificarStatusCompetencia(objeto.get().getDt_anomes(), objeto.get().getId_cliente());
 
         itemRepository.deleteByIdMestre(id);
         repository.deleteById(id);
 
     }
 
-    public void validarSequencia(Long id, String codigo, String competencia) throws Exception {
+    public void validarSequencia(Long id, String codigo, String competencia, Long id_cliente) throws Exception {
 
         if (id != null)
             return;
 
-        Boolean fl_existe = repository.obterSequencialExistente(codigo,competencia);
+        Boolean fl_existe = repository.obterSequencialExistente(codigo,competencia, id_cliente);
 
         if (fl_existe != null && fl_existe) {
             throw new Exception("Codigo sequencial ja existente.");

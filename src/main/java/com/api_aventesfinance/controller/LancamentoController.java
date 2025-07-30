@@ -56,58 +56,68 @@ public class LancamentoController extends BaseController<Lancamento, LancamentoD
 	}
 
 	@PostMapping(value = "/cadastrar", produces = "application/json")
-	public ResponseEntity<?> cadastrarLanc(@RequestBody Lancamento objeto) throws Exception {
+	public ResponseEntity<?> cadastrarLanc(@RequestBody Lancamento objeto,
+			@RequestHeader(value = "X-Cliente", required = false) String id_cliente) throws Exception {
 
-		lancamentoService.salvarItens(objeto);
+		lancamentoService.salvarItens(objeto, Long.valueOf(id_cliente));
 		return new ResponseEntity<>(objeto, HttpStatus.OK);
 	}
 
 	@GetMapping(value = "/lista-por-competencia/", produces = "application/json")
 	public ResponseEntity<?> obterObjetoCompetenica(
-			@RequestHeader(value = "X-Competencia", required = false) String competencia) {
+			@RequestHeader(value = "X-Competencia", required = false) String competencia,
+			@RequestHeader(value = "X-Cliente", required = false) String id_cliente) {
 
 		if (competencia == null || competencia.isEmpty()) {
 			return new ResponseEntity<>(Map.of("message", "Competência não foi definida!"), HttpStatus.FOUND);
 
 		}
-		List<Lancamento> objeto = objetoRepository.buscarObjetoCompetancia(competencia);
+		List<Lancamento> objeto = objetoRepository.buscarObjetoCompetancia(competencia, Long.valueOf(id_cliente));
 
 		return new ResponseEntity<>(objeto, HttpStatus.OK);
 	}
 
 	@GetMapping(value = "/lista-por-competencia/{id}", produces = "application/json")
 	public ResponseEntity<?> obterObjetoCompetenicaId(
-			@RequestHeader(value = "X-Competencia", required = false) String competencia, @PathVariable Long id) {
+			@RequestHeader(value = "X-Competencia", required = false) String competencia,
+			@RequestHeader(value = "X-Cliente", required = false) String id_cliente,
+			@PathVariable Long id) {
 
 		if (competencia == null || competencia.isEmpty()) {
 			return new ResponseEntity<>(Map.of("message", "Competência não foi definida!"), HttpStatus.FOUND);
 
 		}
-		Lancamento objeto = objetoRepository.buscarObjetoCompetanciaId(competencia, id);
+		Lancamento objeto = objetoRepository.buscarObjetoCompetanciaId(competencia, id, Long.valueOf(id_cliente));
 
 		return new ResponseEntity<>(objeto, HttpStatus.OK);
 	}
 
 	@GetMapping(value = "/lancamento-existente/{id_centrocusto}/{dt_anomes}", produces = "application/json")
-	public ResponseEntity<?> obterLancamentoExistente(@PathVariable Long id_centrocusto, @PathVariable String dt_anomes) {
+	public ResponseEntity<?> obterLancamentoExistente(@PathVariable Long id_centrocusto,
+			@PathVariable String dt_anomes,
+			@RequestHeader(value = "X-Cliente", required = false) String id_cliente) {
 
 		Optional<Lancamento> objeto = objetoRepository.existeLancamentoPorCentroCustoMes(dt_anomes,
-				id_centrocusto, null);
+				id_centrocusto, null,  Long.valueOf(id_cliente));
 		return new ResponseEntity<>(objeto, HttpStatus.OK);
 	}
 
 	@DeleteMapping(value = "/deletar/{id}", produces = "application/json")
-	public ResponseEntity<?> deletar(@PathVariable Long id,@RequestHeader(value = "X-Competencia", required = false) String competencia) throws Exception {
+	public ResponseEntity<?> deletar(@PathVariable Long id,
+			@RequestHeader(value = "X-Competencia", required = false) String competencia,
+			@RequestHeader(value = "X-Cliente", required = false) String id_cliente) throws Exception {
 
-		lancamentoService.excluir(id, competencia);
+		lancamentoService.excluir(id, competencia,  Long.valueOf(id_cliente));
 		return new ResponseEntity<>(Map.of("message", "Deletado com sucesso!"), HttpStatus.OK);
 
 	}
 
 	@GetMapping(value = "/sequencia", produces = "application/json")
 	@Operation(summary = "Gerar sequencia")
-	public ResponseEntity<?> obterSequencia(@RequestHeader(value = "X-Competencia", required = false) String competencia) {
-		Long ultima_sequencia = Optional.ofNullable(objetoRepository.obterSequencial(competencia)).orElse(0L);
+	public ResponseEntity<?> obterSequencia(
+			@RequestHeader(value = "X-Competencia", required = false) String competencia,
+			@RequestHeader(value = "X-Cliente", required = false) String id_cliente) {
+		Long ultima_sequencia = Optional.ofNullable(objetoRepository.obterSequencial(competencia, Long.valueOf(id_cliente))).orElse(0L);
 
 		Long sq_sequencia = ultima_sequencia + 1;
 		String resposta = "%03d".formatted(sq_sequencia);

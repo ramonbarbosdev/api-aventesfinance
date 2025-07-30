@@ -56,9 +56,9 @@ public class CompetenciaService {
         return objeto.get();
     }
 
-    public void verificarStatusCompetencia(String codigo) throws Exception {
+    public void verificarStatusCompetencia(String codigo, Long id_cliente) throws Exception {
 
-        Competencia objeto = repository.verificarStatusCompetencia(codigo);
+        Competencia objeto = repository.verificarStatusCompetencia(codigo, id_cliente);
 
         if (objeto != null) {
             if (objeto.getTp_status().equals(StatusCompetencia.ABERTO)) {

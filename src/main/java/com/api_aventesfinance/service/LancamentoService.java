@@ -41,9 +41,10 @@ public class LancamentoService {
     private CompetenciaService competenciaService;
 
     @Transactional(rollbackFor = Exception.class)
-    public Lancamento salvarItens(Lancamento objeto) throws Exception {
+    public Lancamento salvarItens(Lancamento objeto, Long id_cliente) throws Exception {
 
         objeto.setVl_total(0.0);
+        objeto.setId_cliente(id_cliente);
         Double vl_lancamento = 0.0;
         objeto.setDt_anomes(DataUtils.formatarAnoMes(objeto.getDt_lancamento()));
 
@@ -98,24 +99,26 @@ public class LancamentoService {
 
     public void validarObjeto(Lancamento objeto) throws Exception {
 
-        competenciaService.verificarStatusCompetencia(objeto.getDt_anomes());
-        validarSequencia(objeto.getId_lancamento(), objeto.getCd_lancamento(), objeto.getDt_anomes());
+        competenciaService.verificarStatusCompetencia(objeto.getDt_anomes(), objeto.getId_cliente());
+        validarSequencia(objeto.getId_lancamento(), objeto.getCd_lancamento(), objeto.getDt_anomes(),  objeto.getId_cliente());
 
         Optional<Lancamento> fl_existe = repository.existeLancamentoPorCentroCustoMes(
                 objeto.getDt_anomes(),
                 objeto.getId_centrocusto(),
-                objeto.getId_lancamento());
+                objeto.getId_lancamento(),
+                objeto.getId_cliente()
+                );
 
         if (fl_existe.isPresent()) {
             throw new Exception("Já existe um lançamento no mês com o centro de custo informado.");
         }
     }
 
-    public void validarSequencia(Long id_lancamento, String cd_lancamento, String dt_anomes) throws Exception {
+    public void validarSequencia(Long id_lancamento, String cd_lancamento, String dt_anomes, Long id_cliente) throws Exception {
 
         if (id_lancamento != null)
             return;
-        Boolean fl_existe = repository.obterSequencialExistente(cd_lancamento, dt_anomes);
+        Boolean fl_existe = repository.obterSequencialExistente(cd_lancamento, dt_anomes, id_cliente);
 
         if (fl_existe != null && fl_existe) {
             throw new Exception("Codigo sequencial do lançamento ja existente.");
@@ -185,10 +188,10 @@ public class LancamentoService {
     }
 
     
-    public Long excluir(Long id, String competencia) throws Exception {
+    public Long excluir(Long id, String competencia, Long id_cliente) throws Exception {
 
         Optional<Lancamento> objeto = repository.findById(id);
-        competenciaService.verificarStatusCompetencia(objeto.get().getDt_anomes());
+        competenciaService.verificarStatusCompetencia(objeto.get().getDt_anomes(), id_cliente);
 
         // movimentacaoRepository.deleteByIdLancamento(id);
         itemObjetoRepository.deleteByIdLancamento(id, competencia);

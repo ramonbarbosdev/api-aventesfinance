@@ -20,11 +20,11 @@ import jakarta.transaction.Transactional;
 @Transactional
 public interface LancamentoRepository extends CrudRepository<Lancamento, Long> {
 
-    @Query(value = "SELECT CASE WHEN MAX(c.cd_lancamento) IS NULL THEN '0' ELSE MAX(c.cd_lancamento) END FROM Lancamento c where c.dt_anomes = ?1", nativeQuery = true)
-    Long obterSequencial(String competencia);
+    @Query(value = "SELECT CASE WHEN MAX(c.cd_lancamento) IS NULL THEN '0' ELSE MAX(c.cd_lancamento) END FROM Lancamento c where c.dt_anomes = ?1 AND id_cliente = ?2", nativeQuery = true)
+    Long obterSequencial(String competencia, Long id_cliente);
 
-    @Query(value = "SELECT cast(1 as boolean) as fl_existe FROM Lancamento l WHERE l.cd_lancamento = ?1 AND l.dt_anomes = ?2 ")
-    Boolean obterSequencialExistente(String codigo, String dt_anomes);
+    @Query(value = "SELECT cast(1 as boolean) as fl_existe FROM Lancamento l WHERE l.cd_lancamento = ?1 AND l.dt_anomes = ?2 AND l.id_cliente = ?3 ")
+    Boolean obterSequencialExistente(String codigo, String dt_anomes, Long id_cliente);
 
     @Query(value = """
                 SELECT *
@@ -32,22 +32,25 @@ public interface LancamentoRepository extends CrudRepository<Lancamento, Long> {
                 WHERE l.dt_anomes = ?1
                   AND l.id_centrocusto = ?2
                   AND (:idLancamento IS NULL OR l.id_lancamento <> :idLancamento)
+                  AND l.id_cliente = ?4
             """, nativeQuery = true)
-    Optional<Lancamento> existeLancamentoPorCentroCustoMes(String dt_anomes, Long id_centrocusto, Long idLancamento);
+    Optional<Lancamento> existeLancamentoPorCentroCustoMes(String dt_anomes, Long id_centrocusto, Long idLancamento, Long id_cliente);
 
     @Query(value = """
                 SELECT *
                 FROM lancamento l
                 WHERE l.dt_anomes = ?1
+                 AND l.id_cliente = ?2
             """, nativeQuery = true)
-    List<Lancamento> buscarObjetoCompetancia(String competencia);
+    List<Lancamento> buscarObjetoCompetancia(String competencia, Long id_cliente);
 
     @Query(value = """
                 SELECT *
                 FROM lancamento l
                 WHERE l.dt_anomes = ?1
                 AND l.id_lancamento = ?2
+                   AND l.id_cliente = ?3
             """, nativeQuery = true)
-    Lancamento buscarObjetoCompetanciaId(String competencia, Long id);
+    Lancamento buscarObjetoCompetanciaId(String competencia, Long id, Long id_cliente);
 
 }

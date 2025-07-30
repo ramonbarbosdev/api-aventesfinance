@@ -66,9 +66,30 @@ public class Emprestimo {
 
     private String dt_anomes;
 
+        @ManyToOne()
+    @JoinColumn(name = "id_cliente", insertable = false, updatable = false)
+    private Cliente cliente;
+
+    @Column(name = "id_cliente")
+    private Long id_cliente;
+    
+
      // Listagem de itens
     @OneToMany(mappedBy = "id_emprestimo", cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     public List<ItemEmprestimo> itens = new ArrayList<ItemEmprestimo>();
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
+    }
+    public Long getId_cliente() {
+        return id_cliente;
+    }
+    public void setId_cliente(Long id_cliente) {
+        this.id_cliente = id_cliente;
+    }
 
     public String getDt_anomes() {
         return dt_anomes;

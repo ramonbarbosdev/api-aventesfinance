@@ -55,6 +55,14 @@ public class Lancamento {
     @Column(unique = false, nullable = true)
     private String ds_lancamento;
 
+     @ManyToOne()
+    @JoinColumn(name = "id_cliente", insertable = false, updatable = false)
+    private Cliente cliente;
+
+    @Column(name = "id_cliente")
+    private Long id_cliente;
+    
+
     // Listagem de itens
     @OneToMany(mappedBy = "id_lancamento", cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     public List<ItemLancamento> itens = new ArrayList<ItemLancamento>();
@@ -66,6 +74,20 @@ public class Lancamento {
     public void setItens(List<ItemLancamento> itens) {
         this.itens = itens;
     }
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
+    }
+    public Long getId_cliente() {
+        return id_cliente;
+    }
+    public void setId_cliente(Long id_cliente) {
+        this.id_cliente = id_cliente;
+    }
+
 
     public CentroCusto getCentroCusto() {
         return centroCusto;
