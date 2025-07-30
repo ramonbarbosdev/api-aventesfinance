@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import com.api_aventesfinance.enums.StatusAtivo;
 import com.api_aventesfinance.enums.TipoCategoria;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
@@ -30,20 +31,22 @@ public class UsuarioCliente {
     @SequenceGenerator(name = "seq_usuario_cliente", sequenceName = "seq_usuario_cliente", allocationSize = 1)
     private Long id_usuariocliente;
 
+    // @JsonIgnore
     @ManyToOne()
     @JoinColumn(name = "id_usuario", insertable = false, updatable = false)
     private Usuario usuario;
 
     @NotNull(message = "O Usuario é obrigatória")
-    @Column(name = "id_usuario", unique = true, nullable = false)
+    @Column(name = "id_usuario")
     private Long id_usuario;
 
+    // @JsonIgnore
     @ManyToOne()
     @JoinColumn(name = "id_cliente", insertable = false, updatable = false)
     private Cliente cliente;
 
     @NotNull(message = "O Cliente é obrigatória")
-    @Column(name = "id_cliente", unique = true, nullable = false)
+    @Column(name = "id_cliente")
     private Long id_cliente;
 
     @Schema(enumAsRef = true, description = "Tipo do empréstimo (ATIVO, INATIVO)")

@@ -1,6 +1,7 @@
 package com.api_aventesfinance.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -19,5 +20,12 @@ import jakarta.transaction.Transactional;
 @Transactional
 public interface UsuarioClienteRepository extends CrudRepository<UsuarioCliente, Long> {
 
-   
+    @Query(value = "SELECT * FROM usuario_cliente WHERE id_usuario = ?1 AND id_cliente = ?2", nativeQuery = true)
+    Optional<UsuarioCliente> verificarExistencia(Long id_usuario, Long id_cliente);
+
+    @Query(value = "DELETE FROM usuario_cliente WHERE id_usuario = ?1 AND id_cliente = ?2", nativeQuery = true)
+    void deleteByUsuarioByCliente(Long id_usuario, Long id_cliente);
+
+    @Query(value = "SELECT * FROM usuario_cliente WHERE  id_cliente = ?1", nativeQuery = true)
+    List<UsuarioCliente> findAllByCliente(Long id_cliente);
 }

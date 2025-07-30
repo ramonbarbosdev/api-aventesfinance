@@ -21,8 +21,6 @@ public abstract  class  BaseController<T,D,ID> {
     protected CrudRepository<T, ID> repository;
 
 
-
-
     public BaseController(CrudRepository<T, ID> repository)
     {
         this.repository = repository; 
