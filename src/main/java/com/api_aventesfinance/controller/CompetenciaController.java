@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -41,15 +42,20 @@ public class CompetenciaController {
         return ResponseEntity.ok(c);
     }
 
-    @GetMapping(value = "/atual", produces = "application/json")
-    public ResponseEntity<Competencia> atual() {
-        return ResponseEntity.ok(service.buscarAtual());
-    }
+    // @GetMapping(value = "/atual", produces = "application/json")
+    // public ResponseEntity<Competencia> atual() {
+    //     return ResponseEntity.ok(service.buscarAtual());
+    // }
 
     @GetMapping(value = "/", produces = "application/json")
     public ResponseEntity<List<?>> todos() {
         List<Competencia> objetos = service.buscarTodos();
         return new ResponseEntity<>(objetos, HttpStatus.OK);
+    }
+    @GetMapping(value = "/atual", produces = "application/json")
+    public ResponseEntity<?> competenciaID(@RequestHeader(value = "X-Competencia", required = false) String competencia) {
+        Competencia objeto = service.buscarPorCompetencia(competencia);
+        return new ResponseEntity<>(objeto, HttpStatus.OK);
     }
 
     @GetMapping(value = "/alterar-status/{id}", produces = "application/json")

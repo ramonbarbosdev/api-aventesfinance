@@ -49,6 +49,11 @@ public class CompetenciaService {
         List<Competencia> objetos = (List<Competencia>) repository.findAll();
         return objetos;
     }
+    public Competencia buscarPorCompetencia(String competencia) {
+
+        Optional<Competencia> objeto = repository.findByCodigo(competencia);
+        return objeto.get();
+    }
 
     public void verificarStatusCompetencia(String codigo) throws Exception {
 
