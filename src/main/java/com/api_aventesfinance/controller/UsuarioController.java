@@ -33,7 +33,9 @@ import org.springframework.web.multipart.MultipartFile;
 import com.api_aventesfinance.dto.UsuarioDTO;
 import com.api_aventesfinance.model.Role;
 import com.api_aventesfinance.model.Usuario;
+import com.api_aventesfinance.model.UsuarioCliente;
 import com.api_aventesfinance.repository.RoleRepository;
+import com.api_aventesfinance.repository.UsuarioClienteRepository;
 import com.api_aventesfinance.repository.UsuarioRepository;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -50,10 +52,23 @@ public class UsuarioController {
 	@Autowired
 	private RoleRepository roleRepository;
 
+		@Autowired
+	private UsuarioClienteRepository usuarioClienteRepository;
+
+
+	@GetMapping(value = "/obter-todos-usuarios", produces = "application/json")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<List<?>> buscarTodosUsuarios() {
+
+		List<UsuarioCliente> objetos = (List<UsuarioCliente>) usuarioClienteRepository.findAll();
+
+		return new ResponseEntity<>(objetos, HttpStatus.OK);
+	}
+
+
 	@GetMapping(value = "/{id}", produces = "application/json")
 	@CacheEvict(value = "cacheuser", allEntries = true)
 	@CachePut("cacheuser")
-
 	public ResponseEntity<UsuarioDTO> init(@PathVariable Long id) {
 
 		Optional<Usuario> usuario = usuarioRepository.findById(id);
@@ -135,12 +150,15 @@ public class UsuarioController {
 		String senhacriptografada = new BCryptPasswordEncoder().encode(usuario.getSenha());
 		usuario.setSenha(senhacriptografada);
 
-		Role roleUser = roleRepository.findByNomeRole("ROLE_USER");
+		String nomeRole  = usuario.getRoles().iterator().next().getNomeRole();
+		Role roleUser = roleRepository.findByNomeRole(nomeRole);
 		if (roleUser == null) {
 			roleUser = new Role();
-			roleUser.setNomeRole("ROLE_USER");
+			roleUser.setNomeRole(nomeRole);
 			roleRepository.save(roleUser);
 		}
+
+		usuario.getRoles().clear();
 		usuario.getRoles().add(roleUser);
 
 		Usuario userTemporario = usuarioRepository.findUserByLogin(usuario.getLogin());

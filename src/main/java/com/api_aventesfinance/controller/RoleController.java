@@ -102,6 +102,17 @@ public class RoleController {
 
     }
 
+    @GetMapping(value = "/", produces = "application/json")
+    // @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> obterTotasRoles() {
+
+        List<Role> usuario =  (List<Role>) roleRepository.findAll();
+
+        return new ResponseEntity<>(usuario, HttpStatus.OK);
+
+    }
+
     @DeleteMapping(value = "/remover-por-usuario/{id_usuario}", produces = "application/json")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> removerRolesUsuario(@PathVariable Long id_usuario) {
