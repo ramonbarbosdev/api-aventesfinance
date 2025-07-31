@@ -119,7 +119,7 @@ public class ClienteController extends BaseController<Cliente, ClienteDTO, Long>
 		return new ResponseEntity<>(objetos, HttpStatus.OK);
 	}
 
-	@PreAuthorize("hasRole('ADMIN')")
+	// @PreAuthorize("hasRole('ADMIN')")
 	@GetMapping(value = "/obter-usuario-logado/{id_usuario}/{id_cliente}", produces = "application/json")
 	public ResponseEntity<?> buscarUsuarioPorClienteUsuario(@PathVariable Long id_usuario,
 			@PathVariable Long id_cliente) {
@@ -129,7 +129,7 @@ public class ClienteController extends BaseController<Cliente, ClienteDTO, Long>
 		return new ResponseEntity<>(objeto, HttpStatus.OK);
 	}
 
-	@PreAuthorize("hasRole('ADMIN')")
+	// @PreAuthorize("hasRole('ADMIN')")
 	@GetMapping(value = "/obter-cliente-usuario/{login}", produces = "application/json")
 	public ResponseEntity<List<?>> buscarClientePorUsuario(@PathVariable String login) throws Exception {
 

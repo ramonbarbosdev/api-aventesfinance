@@ -16,6 +16,7 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -52,6 +53,7 @@ public class UsuarioController {
 	@GetMapping(value = "/{id}", produces = "application/json")
 	@CacheEvict(value = "cacheuser", allEntries = true)
 	@CachePut("cacheuser")
+
 	public ResponseEntity<UsuarioDTO> init(@PathVariable Long id) {
 
 		Optional<Usuario> usuario = usuarioRepository.findById(id);
@@ -127,6 +129,7 @@ public class UsuarioController {
 	}
 
 	@PostMapping(value = "/", produces = "application/json")
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> cadastrar(@RequestBody Usuario usuario) {
 
 		String senhacriptografada = new BCryptPasswordEncoder().encode(usuario.getSenha());
@@ -151,10 +154,8 @@ public class UsuarioController {
 		return new ResponseEntity<>(usuarioSalvo, HttpStatus.OK);
 	}
 
-	
-	
-
 	@PutMapping(value = "/", produces = "application/json")
+    @PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> atualizar(@RequestBody Usuario usuario) {
 
 		Usuario userTemporario = usuarioRepository.findUserByLogin(usuario.getLogin());
@@ -179,6 +180,7 @@ public class UsuarioController {
 	}
 
 	@DeleteMapping(value = "/{id}", produces = "application/json")
+    @PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> delete(@PathVariable Long id) {
 
 		usuarioRepository.deleteById(id);
