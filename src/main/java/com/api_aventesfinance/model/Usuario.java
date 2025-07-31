@@ -4,12 +4,11 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
-
-
-import org.hibernate.annotations.ForeignKey;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -26,67 +25,41 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinColumns;
 import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.ForeignKey;
 
 @Entity
 public class Usuario implements UserDetails {
 
-
-    /**
-     * 
-     */
-    @Serial
-    private static final long serialVersionUID = 1L;
+	/**
+	 * 
+	 */
+	@Serial
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
-	
+
 	@Column(unique = true)
 	private String login;
-	
+
 	private String senha;
-	
+
 	private String nome;
-	
+
 	private String token = "";
 
 	private String img;
 
+	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+	@JoinTable(name = "usuarios_role", joinColumns = @JoinColumn(name = "usuario_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_usuario_role_usuario")), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_usuario_role_role"))
+	// Sem uniqueConstraints aqui se você quer permitir duplicatas (não recomendado)
+	)
+	private Set<Role> roles = new HashSet<>();
 
-
-	
-
-	@OneToMany(fetch = FetchType.EAGER)
-	@JoinTable( name = "usuarios_role",
-				uniqueConstraints = @UniqueConstraint(
-													columnNames = {"usuario_id", "role_id"},
-													name = "unique_role_user"
-													),
-				joinColumns = @JoinColumn(
-										name = "usuario_id", 
-										referencedColumnName = "id", 
-										table = "usuario",
-										unique = false,										
-										foreignKey = @jakarta.persistence.ForeignKey(name = "usuario_fk", value =  ConstraintMode.CONSTRAINT)
-										),
-				inverseJoinColumns = @JoinColumn(name = "role_id",
-												referencedColumnName = "id",
-												table = "role",
-												unique = false,
-												//updatable = false,
-												foreignKey = @jakarta.persistence.ForeignKey(name = "role_fk", value =  ConstraintMode.CONSTRAINT)											
-												)								
-				)
-	private List<Role> roles = new ArrayList<>(); 
-	
-
-	
-	
-	/*Relacionamento Um pra muitos - Fim */
-	
-	
 	public String getImg() {
 		return img;
 	}
@@ -95,13 +68,14 @@ public class Usuario implements UserDetails {
 		this.img = img;
 	}
 
-	public List<Role> getRoles() {
+
+	public Set<Role> getRoles() {
 		return roles;
 	}
-	public void setRoles(List<Role> roles) {
+	public void setRoles(Set<Role> roles) {
 		this.roles = roles;
 	}
-	
+
 	public String getToken() {
 		return token;
 	}
@@ -109,9 +83,7 @@ public class Usuario implements UserDetails {
 	public void setToken(String token) {
 		this.token = token;
 	}
-	
-	
-	 
+
 	public Long getId() {
 		return id;
 	}
@@ -135,7 +107,6 @@ public class Usuario implements UserDetails {
 	public void setSenha(String senha) {
 		this.senha = senha;
 	}
-	
 
 	public String getNome() {
 		return nome;
@@ -162,57 +133,57 @@ public class Usuario implements UserDetails {
 		return Objects.equals(id, other.id);
 	}
 
-	/*Autorização / Permissao / Autenticacao*/
-	//São os acessos do usuario ROLE_ADMIN, ROLE_FUNCIONARIO..
+	/* Autorização / Permissao / Autenticacao */
+	// São os acessos do usuario ROLE_ADMIN, ROLE_FUNCIONARIO..
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		
+
 		return roles;
 	}
-	
+
 	@JsonIgnore
 	@Override
 	public String getPassword() {
-		
+
 		return this.senha;
 	}
 
 	@JsonIgnore
 	@Override
 	public String getUsername() {
-		
+
 		return this.login;
 	}
 
 	@JsonIgnore
 	@Override
 	public boolean isAccountNonExpired() {
-		
-		//return UserDetails.super.isAccountNonExpired();
+
+		// return UserDetails.super.isAccountNonExpired();
 		return true;
 	}
-	
+
 	@JsonIgnore
 	@Override
 	public boolean isAccountNonLocked() {
-		
-		//return UserDetails.super.isAccountNonLocked();
+
+		// return UserDetails.super.isAccountNonLocked();
 		return true;
 	}
-	
+
 	@JsonIgnore
 	@Override
 	public boolean isCredentialsNonExpired() {
-		
-		//return UserDetails.super.isCredentialsNonExpired();
+
+		// return UserDetails.super.isCredentialsNonExpired();
 		return true;
 	}
-	
+
 	@JsonIgnore
 	@Override
 	public boolean isEnabled() {
-		
-		//return UserDetails.super.isEnabled();
+
+		// return UserDetails.super.isEnabled();
 		return true;
 	}
 }

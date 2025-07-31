@@ -13,6 +13,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -64,6 +65,7 @@ public class ClienteController extends BaseController<Cliente, ClienteDTO, Long>
 		super(repository);
 	}
 
+	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping(value = "/cadastrar", produces = "application/json")
 	public ResponseEntity<?> create(@RequestBody Cliente objeto) throws Exception {
 		Optional<Cliente> objetoExistente = objetoRepository.findByNucnpjcpf(objeto.getNu_cnpjcpf());
@@ -76,6 +78,7 @@ public class ClienteController extends BaseController<Cliente, ClienteDTO, Long>
 
 	}
 
+	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping(value = "/cadastrar-usuario-cliente", produces = "application/json")
 	public ResponseEntity<?> createUsuarioCliente(@RequestBody UsuarioClienteDTO dto) throws Exception {
 
@@ -97,6 +100,7 @@ public class ClienteController extends BaseController<Cliente, ClienteDTO, Long>
 
 	}
 
+	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping(value = "/remover-usuario-cliente/{id}", produces = "application/json")
 	public ResponseEntity<?> removerUsuarioCliente(@PathVariable Long id) throws Exception {
 
@@ -106,6 +110,7 @@ public class ClienteController extends BaseController<Cliente, ClienteDTO, Long>
 
 	}
 
+	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping(value = "/obter-usuario-cliente/{id_cliente}", produces = "application/json")
 	public ResponseEntity<List<?>> buscarUsuarioPorCliente(@PathVariable Long id_cliente) {
 
@@ -114,21 +119,23 @@ public class ClienteController extends BaseController<Cliente, ClienteDTO, Long>
 		return new ResponseEntity<>(objetos, HttpStatus.OK);
 	}
 
+	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping(value = "/obter-usuario-logado/{id_usuario}/{id_cliente}", produces = "application/json")
-	public ResponseEntity<?> buscarUsuarioPorClienteUsuario(@PathVariable Long id_usuario,@PathVariable Long id_cliente) {
+	public ResponseEntity<?> buscarUsuarioPorClienteUsuario(@PathVariable Long id_usuario,
+			@PathVariable Long id_cliente) {
 
-		UsuarioCliente objeto = usuarioClienteRepository.findByUsuarioByCliente(id_usuario,id_cliente);
+		UsuarioCliente objeto = usuarioClienteRepository.findByUsuarioByCliente(id_usuario, id_cliente);
 
 		return new ResponseEntity<>(objeto, HttpStatus.OK);
 	}
 
+	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping(value = "/obter-cliente-usuario/{login}", produces = "application/json")
 	public ResponseEntity<List<?>> buscarClientePorUsuario(@PathVariable String login) throws Exception {
 
 		Usuario usuario = usuarioRepository.findUserByLogin(login);
 
-		if(usuario == null)
-		{
+		if (usuario == null) {
 			throw new Exception("O usuario informado não possui acesso no sistema.");
 		}
 

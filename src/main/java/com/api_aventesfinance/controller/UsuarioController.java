@@ -120,7 +120,7 @@ public class UsuarioController {
 
 		userTemporario.setLogin(usuario.getLogin());
 		userTemporario.setNome(usuario.getNome());
-		
+
 		Usuario usuarioSalvo = usuarioRepository.save(userTemporario);
 
 		return new ResponseEntity<>(Map.of("message", "Atualizado com sucesso!"), HttpStatus.OK);
@@ -146,11 +146,13 @@ public class UsuarioController {
 			return new ResponseEntity<>(Map.of("message", "O usuario informado já existe!"), HttpStatus.NOT_FOUND);
 		}
 
-
 		Usuario usuarioSalvo = usuarioRepository.save(usuario);
 
 		return new ResponseEntity<>(usuarioSalvo, HttpStatus.OK);
 	}
+
+	
+	
 
 	@PutMapping(value = "/", produces = "application/json")
 	public ResponseEntity<?> atualizar(@RequestBody Usuario usuario) {
@@ -179,7 +181,6 @@ public class UsuarioController {
 	@DeleteMapping(value = "/{id}", produces = "application/json")
 	public ResponseEntity<?> delete(@PathVariable Long id) {
 
-	
 		usuarioRepository.deleteById(id);
 
 		return ResponseEntity.ok(Map.of("message", "Removido com sucesso!"));
