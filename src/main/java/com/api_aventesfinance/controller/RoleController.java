@@ -48,15 +48,16 @@ public class RoleController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> criarNovaRole(@RequestBody Role objeto) throws Exception {
 
-        Role roleExistente = roleRepository.findByNomeRole(objeto.getNomeRole());
-        if(roleExistente != null)
-        {
-            throw new Exception("Papel já existe!");
+        Optional<Role> roleExistente = Optional.empty();
 
+        if (objeto.getId() != null) {
+            roleExistente = roleRepository.findById(objeto.getId());
         }
-
         Role roleUser = new Role();
         roleUser.setNomeRole(objeto.getNomeRole());
+
+         roleExistente.ifPresent(existing -> roleUser.setId(existing.getId()));
+
         roleRepository.save(roleUser);
 
         return new ResponseEntity<>(roleUser, HttpStatus.OK);
@@ -107,9 +108,20 @@ public class RoleController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> obterTotasRoles() {
 
-        List<Role> usuario =  (List<Role>) roleRepository.findAll();
+        List<Role> usuario = (List<Role>) roleRepository.findAll();
 
         return new ResponseEntity<>(usuario, HttpStatus.OK);
+
+    }
+
+    @GetMapping(value = "/{id}", produces = "application/json")
+    // @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> obterRoleId(@PathVariable Long id) {
+
+        Optional<Role> objeto = roleRepository.findById(id);
+
+        return new ResponseEntity<>(objeto, HttpStatus.OK);
 
     }
 
@@ -119,7 +131,17 @@ public class RoleController {
 
         roleRepository.deleteByUsuarioId(id_usuario);
 
-        return new ResponseEntity<>(Map.of("message", "Papel removido do usuario!"), HttpStatus.OK);
+        return new ResponseEntity<>(Map.of("message", "Acesso removido do usuario!"), HttpStatus.OK);
+
+    }
+
+    @DeleteMapping(value = "/{id}", produces = "application/json")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> deletar(@PathVariable Long id) {
+
+        roleRepository.deleteById(id);
+
+        return new ResponseEntity<>(Map.of("message", "Acesso excluido!"), HttpStatus.OK);
 
     }
 

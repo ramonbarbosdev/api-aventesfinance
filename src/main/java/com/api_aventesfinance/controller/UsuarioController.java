@@ -164,8 +164,8 @@ public class UsuarioController {
 		Usuario userTemporario = usuarioRepository.findUserByLogin(usuario.getLogin());
 
 		if (userTemporario != null) {
-			return new ResponseEntity<>(Map.of("message", "O usuario informado já existe!"), HttpStatus.NOT_FOUND);
-		}
+			usuario.setId(userTemporario.getId());
+		}	
 
 		Usuario usuarioSalvo = usuarioRepository.save(usuario);
 

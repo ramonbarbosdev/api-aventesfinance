@@ -2,6 +2,8 @@ package com.api_aventesfinance.config;
 
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.postgresql.util.PSQLException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -26,13 +28,30 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<?> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+        
+        
+        String mensagemTratada = traduzMensagemViolacao(ex.getMessage());
         ErrorResponse error = new ErrorResponse(
-                "JPA:" + ex.getMessage(),
-                HttpStatus.BAD_REQUEST.value(),
+                mensagemTratada,
+                HttpStatus.CONFLICT.value(),
                 LocalDateTime.now());
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
 
+    }
+
+     private String traduzMensagemViolacao(String mensagemOriginal) {
+        if (mensagemOriginal == null) return "Violação de integridade de dados.";
+        Pattern pattern = Pattern.compile("violates foreign key constraint \"(.*?)\".*table \"(.*?)\"");
+        Matcher matcher = pattern.matcher(mensagemOriginal);
+        if (matcher.find()) {
+            String constraint = matcher.group(1);
+            String tabela = matcher.group(2);
+            return String.format("A exclusão falhou: o registro está sendo utilizado na tabela '%s' (constraint: %s).",
+                    tabela, constraint);
+        }
+        return mensagemOriginal;
+        // return "Erro de integridade referencial detectado. Verifique se o item está em uso por outras entidades.";
     }
 
     @ExceptionHandler(TransactionSystemException.class)
@@ -77,7 +96,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
- 
+
+
+   
 
     // Handler genérico opcional
     @ExceptionHandler(Exception.class)

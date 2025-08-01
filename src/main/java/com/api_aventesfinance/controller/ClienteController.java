@@ -93,14 +93,11 @@ public class ClienteController extends BaseController<Cliente, ClienteDTO, Long>
 		objeto.setId_cliente(dto.getId_cliente());
 		objeto.setId_usuario(dto.getId_usuario());
 		objeto.setDt_cadatros(LocalDateTime.now());
+		objeto.setTp_status(dto.getTp_status());
 
 		if (dto.getId_usuariocliente() != null) {
 			Optional<UsuarioCliente> existente = usuarioClienteRepository.findById(dto.getId_usuariocliente());
 			objeto.setId_usuariocliente(existente.get().getId_usuariocliente());
-			objeto.setId_cliente(dto.getId_cliente());
-			objeto.setTp_status(dto.getTp_status());
-			objeto.setDt_cadatros(dto.getDt_cadatros());
-
 		}
 
 		return new ResponseEntity<>(usuarioClienteRepository.save(objeto), HttpStatus.OK);
