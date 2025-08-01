@@ -50,10 +50,21 @@ public class Competencia {
     @Column(name = "dt_cadatros", nullable = false, updatable = false)
     private LocalDateTime dt_cadatros;
 
+    @Column(name = "dt_competencia")
+    private String dt_competencia;
+
     @PrePersist
     protected void onCreate() {
         this.dt_cadatros = LocalDateTime.now();
     }
+
+    public String getDt_competencia() {
+        return dt_competencia;
+    }
+    public void setDt_competencia(String dt_competencia) {
+        this.dt_competencia = dt_competencia;
+    }
+    
 
     public Cliente getCliente() {
         return cliente;

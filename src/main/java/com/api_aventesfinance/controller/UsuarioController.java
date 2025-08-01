@@ -198,7 +198,7 @@ public class UsuarioController {
 	}
 
 	@DeleteMapping(value = "/{id}", produces = "application/json")
-    @PreAuthorize("hasRole('ADMIN')")
+       @PreAuthorize("hasAnyRole('ADMIN')")
 	public ResponseEntity<?> delete(@PathVariable Long id) {
 
 		usuarioClienteRepository.deleteByIdUsuario(id);

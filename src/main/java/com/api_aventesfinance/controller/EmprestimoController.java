@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,57 +42,59 @@ public class EmprestimoController extends BaseController<Emprestimo, EmprestimoD
     @Autowired
     private ItemEmprestimoRepository itemEmprestimoRepository;
 
-
-
     @Autowired
     private EmprestimoService service;
 
-        public EmprestimoController(CrudRepository<Emprestimo, Long> repository) {
+    public EmprestimoController(CrudRepository<Emprestimo, Long> repository) {
         super(repository);
     }
 
-
+    @PreAuthorize("hasAnyRole('ADMIN', 'GESTOR', 'USER')")
     @PostMapping(value = "/cadastrar", produces = "application/json")
-    public ResponseEntity<?> cadastrarMestreDatalhe(@RequestBody Emprestimo objeto, @RequestHeader(value = "X-Cliente", required = false) String id_cliente) throws Exception {
+    public ResponseEntity<?> cadastrarMestreDatalhe(@RequestBody Emprestimo objeto,
+            @RequestHeader(value = "X-Cliente", required = false) String id_cliente) throws Exception {
 
         service.salvarItens(objeto, Long.valueOf(id_cliente));
         return new ResponseEntity<>(objeto, HttpStatus.OK);
     }
 
-   @GetMapping(value = "/lista-por-competencia/", produces = "application/json")
-	public ResponseEntity<?> obterObjetoCompetenica(
-        @RequestHeader(value = "X-Cliente", required = false) String id_cliente,
-			@RequestHeader(value = "X-Competencia", required = false) String competencia) {
+    @PreAuthorize("hasAnyRole('ADMIN', 'GESTOR', 'USER')")
+    @GetMapping(value = "/lista-por-competencia/", produces = "application/json")
+    public ResponseEntity<?> obterObjetoCompetenica(
+            @RequestHeader(value = "X-Cliente", required = false) String id_cliente,
+            @RequestHeader(value = "X-Competencia", required = false) String competencia) {
 
-		if (competencia == null || competencia.isEmpty()) {
-			return new ResponseEntity<>(Map.of("message", "Competência não foi definida!"), HttpStatus.FOUND);
+        if (competencia == null || competencia.isEmpty()) {
+            return new ResponseEntity<>(Map.of("message", "Competência não foi definida!"), HttpStatus.FOUND);
 
-		}
-		List<Emprestimo> objeto = objetoRepository.buscarObjetoCompetancia(competencia, Long.valueOf(id_cliente));
+        }
+        List<Emprestimo> objeto = objetoRepository.buscarObjetoCompetancia(competencia, Long.valueOf(id_cliente));
 
-		return new ResponseEntity<>(objeto, HttpStatus.OK);
-	}
+        return new ResponseEntity<>(objeto, HttpStatus.OK);
+    }
 
-   @GetMapping(value = "/lista-por-competencia/{id}", produces = "application/json")
-	public ResponseEntity<?> obterObjetoCompetenicaId(
-         @RequestHeader(value = "X-Cliente", required = false) String id_cliente,
-			@RequestHeader(value = "X-Competencia", required = false) String competencia, @PathVariable Long id) {
+    @PreAuthorize("hasAnyRole('ADMIN', 'GESTOR', 'USER')")
+    @GetMapping(value = "/lista-por-competencia/{id}", produces = "application/json")
+    public ResponseEntity<?> obterObjetoCompetenicaId(
+            @RequestHeader(value = "X-Cliente", required = false) String id_cliente,
+            @RequestHeader(value = "X-Competencia", required = false) String competencia, @PathVariable Long id) {
 
-		if (competencia == null || competencia.isEmpty()) {
-			return new ResponseEntity<>(Map.of("message", "Competência não foi definida!"), HttpStatus.FOUND);
+        if (competencia == null || competencia.isEmpty()) {
+            return new ResponseEntity<>(Map.of("message", "Competência não foi definida!"), HttpStatus.FOUND);
 
-		}
-		Emprestimo objeto = objetoRepository.buscarObjetoCompetanciaId(competencia,id, Long.valueOf(id_cliente));
+        }
+        Emprestimo objeto = objetoRepository.buscarObjetoCompetanciaId(competencia, id, Long.valueOf(id_cliente));
 
-		return new ResponseEntity<>(objeto, HttpStatus.OK);
-	}
-
-
+        return new ResponseEntity<>(objeto, HttpStatus.OK);
+    }
+    @PreAuthorize("hasAnyRole('ADMIN', 'GESTOR', 'USER')")
     @GetMapping(value = "/sequencia", produces = "application/json")
     @Operation(summary = "Gerar sequencia")
-    public ResponseEntity<?> obterSequencia(@RequestHeader(value = "X-Competencia", required = false) String competencia,
-       @RequestHeader(value = "X-Cliente", required = false) String id_cliente) {
-        Long ultima_sequencia = Optional.ofNullable(objetoRepository.obterSequencial(competencia, Long.valueOf(id_cliente))).orElse(0L);
+    public ResponseEntity<?> obterSequencia(
+            @RequestHeader(value = "X-Competencia", required = false) String competencia,
+            @RequestHeader(value = "X-Cliente", required = false) String id_cliente) {
+        Long ultima_sequencia = Optional
+                .ofNullable(objetoRepository.obterSequencial(competencia, Long.valueOf(id_cliente))).orElse(0L);
 
         Long sq_sequencia = ultima_sequencia + 1;
         String resposta = "%03d".formatted(sq_sequencia);
@@ -99,6 +102,7 @@ public class EmprestimoController extends BaseController<Emprestimo, EmprestimoD
         return new ResponseEntity<>(Map.of("sequencia", resposta), HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'GESTOR', 'USER')")
     @GetMapping(value = "/sequencia-detalhe/{id}", produces = "application/json")
     @Operation(summary = "Gerar sequencia")
     public ResponseEntity<?> obterSequenciaDetalhe(@PathVariable Long id) {
@@ -130,6 +134,7 @@ public class EmprestimoController extends BaseController<Emprestimo, EmprestimoD
         return ResponseEntity.ok(StatusEmprestimo.values());
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'GESTOR')")
     @DeleteMapping(value = "/deletar/{id}", produces = "application/json")
     public ResponseEntity<?> deletar(@PathVariable Long id) throws Exception {
 

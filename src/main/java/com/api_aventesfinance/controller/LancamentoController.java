@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -55,6 +56,8 @@ public class LancamentoController extends BaseController<Lancamento, LancamentoD
 		super(repository);
 	}
 
+	
+	@PreAuthorize("hasAnyRole('ADMIN', 'GESTOR', 'USER')")
 	@PostMapping(value = "/cadastrar", produces = "application/json")
 	public ResponseEntity<?> cadastrarLanc(@RequestBody Lancamento objeto,
 			@RequestHeader(value = "X-Cliente", required = false) String id_cliente) throws Exception {
@@ -63,6 +66,7 @@ public class LancamentoController extends BaseController<Lancamento, LancamentoD
 		return new ResponseEntity<>(objeto, HttpStatus.OK);
 	}
 
+	@PreAuthorize("hasAnyRole('ADMIN', 'GESTOR', 'USER')")
 	@GetMapping(value = "/lista-por-competencia/", produces = "application/json")
 	public ResponseEntity<?> obterObjetoCompetenica(
 			@RequestHeader(value = "X-Competencia", required = false) String competencia,
@@ -77,6 +81,7 @@ public class LancamentoController extends BaseController<Lancamento, LancamentoD
 		return new ResponseEntity<>(objeto, HttpStatus.OK);
 	}
 
+	@PreAuthorize("hasAnyRole('ADMIN', 'GESTOR', 'USER')")
 	@GetMapping(value = "/lista-por-competencia/{id}", produces = "application/json")
 	public ResponseEntity<?> obterObjetoCompetenicaId(
 			@RequestHeader(value = "X-Competencia", required = false) String competencia,
@@ -92,32 +97,36 @@ public class LancamentoController extends BaseController<Lancamento, LancamentoD
 		return new ResponseEntity<>(objeto, HttpStatus.OK);
 	}
 
+	@PreAuthorize("hasAnyRole('ADMIN', 'GESTOR', 'USER')")
 	@GetMapping(value = "/lancamento-existente/{id_centrocusto}/{dt_anomes}", produces = "application/json")
 	public ResponseEntity<?> obterLancamentoExistente(@PathVariable Long id_centrocusto,
 			@PathVariable String dt_anomes,
 			@RequestHeader(value = "X-Cliente", required = false) String id_cliente) {
 
 		Optional<Lancamento> objeto = objetoRepository.existeLancamentoPorCentroCustoMes(dt_anomes,
-				id_centrocusto, null,  Long.valueOf(id_cliente));
+				id_centrocusto, null, Long.valueOf(id_cliente));
 		return new ResponseEntity<>(objeto, HttpStatus.OK);
 	}
 
+	@PreAuthorize("hasAnyRole('ADMIN', 'GESTOR')")
 	@DeleteMapping(value = "/deletar/{id}", produces = "application/json")
 	public ResponseEntity<?> deletar(@PathVariable Long id,
 			@RequestHeader(value = "X-Competencia", required = false) String competencia,
 			@RequestHeader(value = "X-Cliente", required = false) String id_cliente) throws Exception {
 
-		lancamentoService.excluir(id, competencia,  Long.valueOf(id_cliente));
+		lancamentoService.excluir(id, competencia, Long.valueOf(id_cliente));
 		return new ResponseEntity<>(Map.of("message", "Deletado com sucesso!"), HttpStatus.OK);
 
 	}
 
+	@PreAuthorize("hasAnyRole('ADMIN', 'GESTOR', 'USER')")
 	@GetMapping(value = "/sequencia", produces = "application/json")
 	@Operation(summary = "Gerar sequencia")
 	public ResponseEntity<?> obterSequencia(
 			@RequestHeader(value = "X-Competencia", required = false) String competencia,
 			@RequestHeader(value = "X-Cliente", required = false) String id_cliente) {
-		Long ultima_sequencia = Optional.ofNullable(objetoRepository.obterSequencial(competencia, Long.valueOf(id_cliente))).orElse(0L);
+		Long ultima_sequencia = Optional
+				.ofNullable(objetoRepository.obterSequencial(competencia, Long.valueOf(id_cliente))).orElse(0L);
 
 		Long sq_sequencia = ultima_sequencia + 1;
 		String resposta = "%03d".formatted(sq_sequencia);
@@ -125,6 +134,7 @@ public class LancamentoController extends BaseController<Lancamento, LancamentoD
 		return new ResponseEntity<>(Map.of("sequencia", resposta), HttpStatus.OK);
 	}
 
+	@PreAuthorize("hasAnyRole('ADMIN', 'GESTOR', 'USER')")
 	@GetMapping(value = "/sequencia-detalhe/{id}", produces = "application/json")
 	@Operation(summary = "Gerar sequencia")
 	public ResponseEntity<?> obterSequenciaDetalhe(@PathVariable Long id) {

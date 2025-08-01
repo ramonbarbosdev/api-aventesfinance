@@ -50,6 +50,11 @@ public class CompetenciaService {
         List<Competencia> objetos = (List<Competencia>) repository.findByCliente(id_cliente);
         return objetos;
     }
+    public  Optional<Competencia> buscarPorId(Long id_cliente, Long id) {
+
+         Optional<Competencia> objetos =  repository.findByClienteById(id_cliente, id);
+        return objetos;
+    }
     public Competencia buscarPorCompetencia(String competencia, Long id_cliente) {
 
         Optional<Competencia> objeto = repository.findByCodigo(competencia, id_cliente);

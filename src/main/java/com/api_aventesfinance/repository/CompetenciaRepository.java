@@ -19,6 +19,10 @@ public interface CompetenciaRepository extends CrudRepository<Competencia, Long>
    @Query(value = "SELECT * FROM competencia WHERE id_cliente = ?1", nativeQuery = true)
     List<Competencia> findByCliente(Long id_cliente);
 
+    @Query(value = "SELECT * FROM competencia WHERE id_cliente = ?1 AND id_competencia = ?2", nativeQuery = true)
+    Optional<Competencia> findByClienteById(Long id_cliente, Long id);
+
+
     @Query(value = "SELECT * FROM competencia WHERE cd_competencia = ?1 AND  id_cliente = ?2 ", nativeQuery = true)
     Competencia verificarStatusCompetencia(String codigo, Long id_cliente);
 
