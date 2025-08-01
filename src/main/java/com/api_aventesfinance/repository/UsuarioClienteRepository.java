@@ -32,4 +32,8 @@ public interface UsuarioClienteRepository extends CrudRepository<UsuarioCliente,
 
     @Query(value = "SELECT * FROM usuario_cliente WHERE  id_usuario = ?1", nativeQuery = true)
     List<UsuarioCliente> findAllByUsuario(Long id);
+
+    @Modifying
+    @Query(value = "DELETE  FROM usuario_cliente WHERE  id_usuario = ?1", nativeQuery = true)
+    void deleteByIdUsuario(Long id);
 }

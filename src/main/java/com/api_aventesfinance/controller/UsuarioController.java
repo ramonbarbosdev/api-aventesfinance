@@ -201,6 +201,7 @@ public class UsuarioController {
     @PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> delete(@PathVariable Long id) {
 
+		usuarioClienteRepository.deleteByIdUsuario(id);
 		usuarioRepository.deleteById(id);
 
 		return ResponseEntity.ok(Map.of("message", "Removido com sucesso!"));
