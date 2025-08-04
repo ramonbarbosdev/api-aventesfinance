@@ -12,6 +12,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +25,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.api_aventesfinance.dto.CategoriaDTO;
+import com.api_aventesfinance.enums.TipoCategoria;
+import com.api_aventesfinance.enums.TipoEmprestimo;
 import com.api_aventesfinance.model.Categoria;
 import com.api_aventesfinance.repository.CategoriaRepository;
 
@@ -39,57 +42,63 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping(value = "/categoria", produces = "application/json")
 @Tag(name = "Categoria")
-public class CategoriaController  {
-	
-	@Autowired
-	private CategoriaRepository repository;
+public class CategoriaController {
 
-	   @GetMapping(value = "/", produces = "application/json")
-    public ResponseEntity<List<?>> obterTodos(  @RequestHeader(value = "X-Cliente", required = false) String id_cliente,
-            @RequestHeader(value = "X-Competencia", required = false) String competencia ) 
-    {
-        List<Categoria> entidades = (List<Categoria>) repository.findAll();
- 
+    @Autowired
+    private CategoriaRepository repository;
+
+    @GetMapping(value = "/", produces = "application/json")
+    public ResponseEntity<List<?>> obterTodos(@RequestHeader(value = "X-Cliente", required = false) String id_cliente,
+            @RequestHeader(value = "X-Competencia", required = false) String competencia) {
+        List<Categoria> entidades = (List<Categoria>) repository.findByAllCliente(Long.valueOf(id_cliente));
+
         return new ResponseEntity<>(entidades, HttpStatus.OK);
     }
 
     @GetMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<?> obterPorId(@PathVariable Long id) {
-        Optional<Categoria> objeto =  repository.findById(id);
+        Optional<Categoria> objeto = repository.findById(id);
 
-
-        return new ResponseEntity<>( objeto, HttpStatus.OK);
+        return new ResponseEntity<>(objeto, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'GESTOR', 'USER')")
     @PostMapping(value = "/", produces = "application/json")
-    public ResponseEntity<?> cadastrar(@RequestBody Categoria objeto,   @RequestHeader(value = "X-Cliente", required = false) String id_cliente,
-            @RequestHeader(value = "X-Competencia", required = false) String competencia) 
-    {
+    public ResponseEntity<?> cadastrar(@RequestBody Categoria objeto,
+            @RequestHeader(value = "X-Cliente", required = false) String id_cliente,
+            @RequestHeader(value = "X-Competencia", required = false) String competencia) {
+
+        objeto.setId_cliente(Long.valueOf(id_cliente));
         Categoria objetoSalvo = repository.save(objeto);
-    
+
         return new ResponseEntity<>(objetoSalvo, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'GESTOR')")
+    @DeleteMapping(value = "/{id}", produces = "application/text")
+    public ResponseEntity<?> delete(@PathVariable Long id) throws Exception {
+        repository.deleteById(id);
 
-	 @DeleteMapping(value = "/{id}", produces = "application/text" )
-	public ResponseEntity<?> delete (@PathVariable Long id) throws Exception
-	{
-        repository.deleteById( id);
-			
-        return ResponseEntity.status(HttpStatus.OK).body("{\"error\": \"Registro deletado!\"}");
+        return ResponseEntity.status(HttpStatus.OK).body("{\"message\": \"Registro deletado!\"}");
 
-	}
+    }
 
+    @GetMapping("/tipo-categoria")
+    public ResponseEntity<TipoCategoria[]> obterTipoEmprestimo() {
+        return ResponseEntity.ok(TipoCategoria.values());
+    }
 
-	@GetMapping(value = "/sequencia", produces = "application/json")
-	@Operation(summary = "Gerar sequencia")
-	public ResponseEntity<?> obterSequencia(  @RequestHeader(value = "X-Cliente", required = false) String id_cliente,
+    @GetMapping(value = "/sequencia", produces = "application/json")
+    @Operation(summary = "Gerar sequencia")
+    public ResponseEntity<?> obterSequencia(@RequestHeader(value = "X-Cliente", required = false) String id_cliente,
             @RequestHeader(value = "X-Competencia", required = false) String competencia) {
-		Long ultima_sequencia = repository.obterSequencial();
+        Long ultima_sequencia = Optional
+                .ofNullable(repository.obterSequencial(Long.valueOf(id_cliente))).orElse(0L);
 
-		Long sq_sequencia = ultima_sequencia + 1;
+        Long sq_sequencia = ultima_sequencia + 1;
+        String resposta = "%03d".formatted(sq_sequencia);
 
-		return new ResponseEntity<>(sq_sequencia, HttpStatus.OK);
-	}
+        return new ResponseEntity<>(Map.of("sequencia", resposta), HttpStatus.OK);
+    }
 
 }

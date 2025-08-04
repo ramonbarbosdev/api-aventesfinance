@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.api_aventesfinance.model.Categoria;
+import com.api_aventesfinance.model.CentroCusto;
 import com.api_aventesfinance.model.Usuario;
 
 import jakarta.transaction.Transactional;
@@ -17,6 +18,10 @@ import jakarta.transaction.Transactional;
 @Transactional
 public interface CategoriaRepository extends CrudRepository<Categoria, Long> {
 
-    @Query(value = "SELECT CASE WHEN MAX(c.cd_categoria) IS NULL THEN '0' ELSE MAX(c.cd_categoria) END FROM Categoria c", nativeQuery = true)
-    Long obterSequencial();
+    @Query(value = "SELECT CASE WHEN MAX(c.cd_categoria) IS NULL THEN '0' ELSE MAX(c.cd_categoria) END FROM categoria c WHERE id_cliente = ?1", nativeQuery = true)
+    Long obterSequencial(Long id_cliente);
+
+    @Query( value = "SELECT * FROM categoria WHERE id_cliente = ?1  ORDER BY id_categoria", nativeQuery = true )
+    List<Categoria> findByAllCliente(Long id_cliente);
+
 }

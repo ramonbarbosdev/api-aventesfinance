@@ -18,7 +18,7 @@ import jakarta.transaction.Transactional;
 @Transactional
 public interface CentroCustoRepository extends CrudRepository<CentroCusto, Long> {
 
-    @Query( value = "SELECT * FROM centro_custo WHERE id_cliente = ?1", nativeQuery = true )
+    @Query( value = "SELECT * FROM centro_custo WHERE id_cliente = ?1  ORDER BY id_centrocusto", nativeQuery = true )
     List<CentroCusto> findByAllCliente(Long id_cliente);
 
     @Query(value = "SELECT CASE WHEN MAX(c.cd_centrocusto) IS NULL THEN '0' ELSE MAX(c.cd_centrocusto) END FROM centro_custo c WHERE id_cliente = ?1", nativeQuery = true)
