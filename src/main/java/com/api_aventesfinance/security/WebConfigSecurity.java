@@ -86,7 +86,8 @@ public class WebConfigSecurity {
                 "https://avantes.ramoncode.com.br",
                 "https://apiavantes.ramoncode.com.br",
                 "https://apiavantes.ramoncode.com.br:8080",
-                "http://apiavantes.ramoncode.com.br"
+                "http://apiavantes.ramoncode.com.br",
+                "https://finance.ramoncode.com.br"
                 ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
