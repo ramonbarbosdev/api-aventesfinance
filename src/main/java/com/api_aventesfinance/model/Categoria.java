@@ -9,6 +9,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 
@@ -31,6 +33,28 @@ public class Categoria {
 
     @Enumerated(EnumType.STRING)
     private TipoCategoria tp_categoria;
+
+    @ManyToOne()
+    @JoinColumn(name = "id_cliente", insertable = false, updatable = false)
+    private Cliente cliente;
+
+    @Column(name = "id_cliente")
+    private Long id_cliente;
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
+    }
+    public Long getId_cliente() {
+        return id_cliente;
+    }
+    public void setId_cliente(Long id_cliente) {
+        this.id_cliente = id_cliente;
+    }
+    
 
     public Long getId_categoria() {
         return id_categoria;

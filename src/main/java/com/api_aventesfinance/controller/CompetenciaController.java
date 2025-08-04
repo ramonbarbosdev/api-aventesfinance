@@ -37,7 +37,8 @@ public class CompetenciaController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'GESTOR')")
     @PostMapping(value = "/", produces = "application/json")
-    public ResponseEntity<?> criar(@RequestBody Competencia obj, @RequestHeader(value = "X-Cliente", required = false) String id_cliente) {
+    public ResponseEntity<?> criar(@RequestBody Competencia obj,
+            @RequestHeader(value = "X-Cliente", required = false) String id_cliente) {
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         LocalDate data = LocalDate.parse(obj.getDt_competencia(), formatter);
@@ -45,12 +46,6 @@ public class CompetenciaController {
         Competencia c = service.criarCompetencia(data, Long.valueOf(id_cliente));
         return ResponseEntity.ok(c);
     }
-
-
-    // @GetMapping(value = "/atual", produces = "application/json")
-    // public ResponseEntity<Competencia> atual() {
-    // return ResponseEntity.ok(service.buscarAtual());
-    // }
 
     @GetMapping(value = "/", produces = "application/json")
     public ResponseEntity<List<?>> todos(@RequestHeader(value = "X-Cliente", required = false) String id_cliente) {
@@ -70,6 +65,10 @@ public class CompetenciaController {
     @GetMapping(value = "/atual", produces = "application/json")
     public ResponseEntity<?> competenciaID(@RequestHeader(value = "X-Competencia", required = false) String competencia,
             @RequestHeader(value = "X-Cliente", required = false) String id_cliente) {
+
+        if (competencia == null)
+            return new ResponseEntity<>(Map.of("message", "Competencia nao informada"), HttpStatus.OK);
+
         Competencia objeto = service.buscarPorCompetencia(competencia, Long.valueOf(id_cliente));
         return new ResponseEntity<>(objeto, HttpStatus.OK);
     }

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -38,18 +39,53 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping(value = "/categoria", produces = "application/json")
 @Tag(name = "Categoria")
-public class CategoriaController extends BaseController<Categoria, CategoriaDTO, Long> {
+public class CategoriaController  {
+	
 	@Autowired
-	private CategoriaRepository objetoRepository;
+	private CategoriaRepository repository;
 
-	public CategoriaController(CrudRepository<Categoria, Long> repository) {
-		super(repository);
+	   @GetMapping(value = "/", produces = "application/json")
+    public ResponseEntity<List<?>> obterTodos(  @RequestHeader(value = "X-Cliente", required = false) String id_cliente,
+            @RequestHeader(value = "X-Competencia", required = false) String competencia ) 
+    {
+        List<Categoria> entidades = (List<Categoria>) repository.findAll();
+ 
+        return new ResponseEntity<>(entidades, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/{id}", produces = "application/json")
+    public ResponseEntity<?> obterPorId(@PathVariable Long id) {
+        Optional<Categoria> objeto =  repository.findById(id);
+
+
+        return new ResponseEntity<>( objeto, HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/", produces = "application/json")
+    public ResponseEntity<?> cadastrar(@RequestBody Categoria objeto,   @RequestHeader(value = "X-Cliente", required = false) String id_cliente,
+            @RequestHeader(value = "X-Competencia", required = false) String competencia) 
+    {
+        Categoria objetoSalvo = repository.save(objeto);
+    
+        return new ResponseEntity<>(objetoSalvo, HttpStatus.CREATED);
+    }
+
+
+	 @DeleteMapping(value = "/{id}", produces = "application/text" )
+	public ResponseEntity<?> delete (@PathVariable Long id) throws Exception
+	{
+        repository.deleteById( id);
+			
+        return ResponseEntity.status(HttpStatus.OK).body("{\"error\": \"Registro deletado!\"}");
+
 	}
+
 
 	@GetMapping(value = "/sequencia", produces = "application/json")
 	@Operation(summary = "Gerar sequencia")
-	public ResponseEntity<?> obterSequencia() {
-		Long ultima_sequencia = objetoRepository.obterSequencial();
+	public ResponseEntity<?> obterSequencia(  @RequestHeader(value = "X-Cliente", required = false) String id_cliente,
+            @RequestHeader(value = "X-Competencia", required = false) String competencia) {
+		Long ultima_sequencia = repository.obterSequencial();
 
 		Long sq_sequencia = ultima_sequencia + 1;
 

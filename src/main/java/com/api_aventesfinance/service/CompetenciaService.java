@@ -39,11 +39,7 @@ public class CompetenciaService {
         return repository.save(c);
     }
 
-    public Competencia buscarAtual(Long id_cliente) {
-        String codigoAtual = YearMonth.now().format(DateTimeFormatter.ofPattern("yyyyMM"));
-        return repository.findByCodigo(codigoAtual, id_cliente)
-                .orElseThrow(() -> new RuntimeException("Competência atual não cadastrada"));
-    }
+
 
     public List<Competencia> buscarTodos(Long id_cliente) {
 
