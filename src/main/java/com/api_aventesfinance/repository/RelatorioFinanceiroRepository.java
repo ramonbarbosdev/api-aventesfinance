@@ -110,60 +110,31 @@ public class RelatorioFinanceiroRepository {
 
     public List<FluxoCaixaDiarioDTO> buscarFluxoCaixaDiario(Long id) {
         String sql = """
-                WITH lancamento_temp AS (
-                     SELECT
-                         id_lancamento,
-                         dt_movimento,
-                         MAX(id_centrocusto) AS id_centrocusto,
-                         SUM(vl_receita) AS vl_receita,
-                         SUM(vl_despesa) AS vl_despesa,
-                         SUM(vl_receita) - SUM(vl_despesa) AS vl_saldo
-                     FROM (
-                         SELECT
-                         l.id_lancamento,
-                         l.dt_lancamento AS dt_movimento,
-                         l.id_centrocusto,
-                         0.00 AS vl_receita,
-                         0.00 AS vl_despesa
-                         FROM lancamento l
+                           WITH lancamento_temp AS (
+                    SELECT
+                        il.id_lancamento,
+                        il.dt_itemlancamento AS dt_movimento,
+                        MAX(l.id_centrocusto) AS id_centrocusto,
+                        SUM(CASE WHEN c.tp_categoria = 'RECEITA' THEN il.vl_itemlancamento ELSE 0 END) AS vl_receita,
+                        SUM(CASE WHEN c.tp_categoria = 'DESPESA' THEN il.vl_itemlancamento ELSE 0 END) AS vl_despesa,
+                        SUM(CASE WHEN c.tp_categoria = 'RECEITA' THEN il.vl_itemlancamento ELSE 0 END) -
+                        SUM(CASE WHEN c.tp_categoria = 'DESPESA' THEN il.vl_itemlancamento ELSE 0 END) AS vl_saldo
+                    FROM item_lancamento il
+                    JOIN lancamento l ON il.id_lancamento = l.id_lancamento
+                    JOIN categoria c ON il.id_categoria = c.id_categoria
+                    WHERE il.id_lancamento = :idLancamento
+                    GROUP BY il.id_lancamento, il.dt_itemlancamento
+                )
 
-                         UNION ALL
-
-                         SELECT
-                         il.id_lancamento,
-                         il.dt_itemlancamento AS dt_movimento,
-                         NULL AS id_centrocusto,
-                         il.vl_itemlancamento AS vl_receita,
-                         0.00 AS vl_despesa
-                         FROM item_lancamento il
-                         JOIN categoria c ON il.id_categoria = c.id_categoria
-                         WHERE c.tp_categoria = 'RECEITA'
-
-                         UNION ALL
-
-                         SELECT
-                         il.id_lancamento,
-                         il.dt_itemlancamento AS dt_movimento,
-                         NULL AS id_centrocusto,
-                         0.00 AS vl_receita,
-                         il.vl_itemlancamento AS vl_despesa
-                         FROM item_lancamento il
-                         JOIN categoria c ON il.id_categoria = c.id_categoria
-                         WHERE c.tp_categoria = 'DESPESA'
-                     ) t
-                     GROUP BY id_lancamento, dt_movimento
-                     )
-
-                     SELECT
-                     id_lancamento,
-                     dt_movimento,
-                     SUM(vl_receita) AS receita,
-                     SUM(vl_despesa) AS despesa,
-                     SUM(vl_saldo) AS saldo
-                     FROM lancamento_temp
-                     WHERE id_lancamento =  :idLancamento
-                     GROUP BY dt_movimento, id_lancamento
-                     ORDER BY dt_movimento;
+                SELECT
+                    id_lancamento,
+                    dt_movimento,
+                    SUM(vl_receita) AS receita,
+                    SUM(vl_despesa) AS despesa,
+                    SUM(vl_saldo) AS saldo
+                FROM lancamento_temp
+                GROUP BY id_lancamento, dt_movimento
+                ORDER BY dt_movimento;
 
                                            """;
 
@@ -171,12 +142,24 @@ public class RelatorioFinanceiroRepository {
                 .setParameter("idLancamento", id)
                 .getResultList();
 
-        return results.stream().map(r -> new FluxoCaixaDiarioDTO(
-                (Long) r[0],
-                ((java.sql.Date) r[1]).toLocalDate(),
-                (Double) r[2],
-                (Double) r[3],
-                (Double) r[4])).toList();
+        double[] saldoAcumulado = { 0.0 };
+
+        return results.stream().map(r -> {
+            Long idLancamento = (Long) r[0];
+            LocalDate data = ((java.sql.Date) r[1]).toLocalDate();
+            double receita = (Double) r[2];
+            double despesa = (Double) r[3];
+            double saldo = receita - despesa;
+
+            saldoAcumulado[0] += saldo;
+
+            return new FluxoCaixaDiarioDTO(
+                    idLancamento,
+                    data,
+                    receita,
+                    despesa,
+                    saldoAcumulado[0]);
+        }).toList();
     }
 
     public List<ReceitaDespesaCategoriaDTO> buscarReceitaDespesaCategoria(String competencia, Long id_cliente) {
@@ -224,7 +207,7 @@ public class RelatorioFinanceiroRepository {
                 FROM emprestimo e
                 LEFT JOIN item_emprestimo ie ON ie.id_emprestimo = e.id_emprestimo
                 where e.dt_anomes = :competencia
-                and e.id_cliente = :id_cliente 
+                and e.id_cliente = :id_cliente
                 GROUP BY e.id_emprestimo
                 ORDER BY e.dt_emprestimo DESC;
 

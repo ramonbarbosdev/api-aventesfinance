@@ -56,16 +56,15 @@ public class LancamentoService {
 
         removerItens(objeto, itens);
 
-
         if (itens != null && itens.size() > 0) {
             for (ItemLancamento item : itens) {
                 item.setId_lancamento(objeto.getId_lancamento());
 
                 if (item.getId_itemlancamento() == null || item.getId_itemlancamento() == 0) {
-                    item.setId_itemlancamento(null); 
+                    item.setId_itemlancamento(null);
                 }
 
-                validacaoCadastrar(item, itens, objeto.getId_lancamento());
+                validacaoCadastrar(item, itens, objeto);
                 item = itemObjetoRepository.save(item);
                 vl_lancamento += item.getVl_itemlancamento();
             }
@@ -100,21 +99,22 @@ public class LancamentoService {
     public void validarObjeto(Lancamento objeto) throws Exception {
 
         competenciaService.verificarStatusCompetencia(objeto.getDt_anomes(), objeto.getId_cliente());
-        validarSequencia(objeto.getId_lancamento(), objeto.getCd_lancamento(), objeto.getDt_anomes(),  objeto.getId_cliente());
+        validarSequencia(objeto.getId_lancamento(), objeto.getCd_lancamento(), objeto.getDt_anomes(),
+                objeto.getId_cliente());
 
         Optional<Lancamento> fl_existe = repository.existeLancamentoPorCentroCustoMes(
                 objeto.getDt_anomes(),
                 objeto.getId_centrocusto(),
                 objeto.getId_lancamento(),
-                objeto.getId_cliente()
-                );
+                objeto.getId_cliente());
 
         if (fl_existe.isPresent()) {
             throw new Exception("Já existe um lançamento no mês com o centro de custo informado.");
         }
     }
 
-    public void validarSequencia(Long id_lancamento, String cd_lancamento, String dt_anomes, Long id_cliente) throws Exception {
+    public void validarSequencia(Long id_lancamento, String cd_lancamento, String dt_anomes, Long id_cliente)
+            throws Exception {
 
         if (id_lancamento != null)
             return;
@@ -125,12 +125,17 @@ public class LancamentoService {
         }
     }
 
-    public void validacaoCadastrar(ItemLancamento item, List<ItemLancamento> listaItens, Long id_lancamento)
+    public void validacaoCadastrar(ItemLancamento item, List<ItemLancamento> listaItens, Lancamento objeto)
             throws Exception {
 
         // validarCategoria(item, listaItens, id_lancamento);
-        validarValorMovimento(item, listaItens, id_lancamento);
-        validarCodigoSequencialItem(item, listaItens, id_lancamento);
+        validarValorMovimento(item, listaItens, objeto.getId_lancamento());
+        validarCodigoSequencialItem(item, listaItens, objeto.getId_lancamento());
+
+        if (item.getDt_itemlancamento().isBefore(objeto.getDt_lancamento())) {
+            throw new Exception("A data do item não pode ser menor que a data do lançamento");
+
+        }
 
     }
 
@@ -187,7 +192,6 @@ public class LancamentoService {
 
     }
 
-    
     public Long excluir(Long id, String competencia, Long id_cliente) throws Exception {
 
         Optional<Lancamento> objeto = repository.findById(id);
@@ -199,6 +203,5 @@ public class LancamentoService {
 
         return id;
     }
-
 
 }
