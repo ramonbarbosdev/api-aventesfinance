@@ -51,6 +51,17 @@ public class ItemLancamento {
     @Column(unique = false, nullable = false)
     private Double vl_itemlancamento;
 
+    @Column(name = "ds_anotacao")
+    private String ds_anotacao;
+
+    public String getDs_anotacao() {
+        return ds_anotacao;
+    }
+    public void setDs_anotacao(String ds_anotacao) {
+        this.ds_anotacao = ds_anotacao;
+    }
+    
+
     public LocalDate getDt_itemlancamento() {
         return dt_itemlancamento;
     }

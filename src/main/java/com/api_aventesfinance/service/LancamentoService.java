@@ -128,7 +128,7 @@ public class LancamentoService {
     public void validacaoCadastrar(ItemLancamento item, List<ItemLancamento> listaItens, Long id_lancamento)
             throws Exception {
 
-        validarCategoria(item, listaItens, id_lancamento);
+        // validarCategoria(item, listaItens, id_lancamento);
         validarValorMovimento(item, listaItens, id_lancamento);
         validarCodigoSequencialItem(item, listaItens, id_lancamento);
 
