@@ -88,7 +88,7 @@ public class RelatorioFinanceiroRepository {
                 FROM lancamento_temp lt
                 JOIN centro_custo cc ON cc.id_centrocusto = lt.id_centrocusto
                 WHERE dt_anomes = :competencia
-                and id_cliente = :id_cliente
+                and lt.id_cliente = :id_cliente
                 GROUP BY lt.dt_anomes, lt.id_centrocusto, cc.nm_centrocusto, id_lancamento
                 ORDER BY lt.dt_anomes
                                           """;
