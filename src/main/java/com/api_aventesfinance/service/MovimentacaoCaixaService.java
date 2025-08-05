@@ -25,7 +25,7 @@ public class MovimentacaoCaixaService {
   public void gravarMovimentoCaixa(Long id_cliente, Long id_centrocusto, LocalDate dt_movimentacao) {
     String sql = """
 
-        WITH movimento_temp AS (
+               WITH movimento_temp AS (
             SELECT
                 dt_movimento,
                 id_centrocusto,
@@ -50,7 +50,9 @@ public class MovimentacaoCaixaService {
                 WHERE id_centrocusto = :id_centrocusto
                   AND dt_movimento < :dt_movimentacao
                   AND id_cliente = :id_cliente
+
                 UNION ALL
+
                 SELECT
                     il.dt_itemlancamento AS dt_movimento,
                     l.id_centrocusto,
@@ -67,6 +69,36 @@ public class MovimentacaoCaixaService {
                 WHERE l.id_centrocusto = :id_centrocusto
                   AND il.dt_itemlancamento >= :dt_movimentacao
                   AND l.id_cliente = :id_cliente
+
+                UNION ALL
+
+                -- LINHA DEFAULT ZERADA CASO NÃO EXISTAM REGISTROS
+                SELECT
+                    :dt_movimentacao AS dt_movimento,
+                    :id_centrocusto AS id_centrocusto,
+                    :id_cliente AS id_cliente,
+                    :dt_movimentacao AS dt_anomes,
+                    0.00 AS vl_receita,
+                    0.00 AS vl_despesa,
+                    0.00 AS vl_emprestimo,
+                    0.00 AS vl_saldo,
+                    FALSE AS fl_ultimamovimentacao
+                WHERE NOT EXISTS (
+                    SELECT 1
+                    FROM movimentacao_caixa mc
+                    WHERE mc.id_centrocusto = :id_centrocusto
+                      AND mc.dt_movimento < :dt_movimentacao
+                      AND mc.id_cliente = :id_cliente
+
+                    UNION
+
+                    SELECT 1
+                    FROM item_lancamento il
+                    JOIN lancamento l ON il.id_lancamento = l.id_lancamento
+                    WHERE l.id_centrocusto = :id_centrocusto
+                      AND il.dt_itemlancamento >= :dt_movimentacao
+                      AND l.id_cliente = :id_cliente
+                )
             ) t
             GROUP BY dt_movimento, id_centrocusto, id_cliente, dt_anomes, fl_ultimamovimentacao
         ),
@@ -118,12 +150,13 @@ public class MovimentacaoCaixaService {
             vl_saldo
         FROM movimento_com_saldo;
 
-                                                     """;
 
-     em.createNativeQuery(sql)
+                                                             """;
+
+    em.createNativeQuery(sql)
         .setParameter("id_centrocusto", id_centrocusto)
         .setParameter("id_cliente", id_cliente)
-        .setParameter("dt_movimentacao",dt_movimentacao)
+        .setParameter("dt_movimentacao", dt_movimentacao)
         .executeUpdate();
   }
 
