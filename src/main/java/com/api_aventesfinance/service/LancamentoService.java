@@ -59,8 +59,6 @@ public class LancamentoService {
 
         removerItens(objeto, itens);
 
-        LocalDate ultimaData = obterUltimaData(itens);
-
         if (itens != null && itens.size() > 0) {
             for (ItemLancamento item : itens) {
                 item.setId_lancamento(objeto.getId_lancamento());
@@ -80,29 +78,12 @@ public class LancamentoService {
         objeto.setItens(itens);
         objeto = repository.save(objeto);
 
-        if (ultimaData == null)
-            ultimaData = objeto.getDt_lancamento();
-
         movimentacaoCaixaService.gravarMovimentoCaixa(
                 objeto.getId_cliente(),
                 objeto.getId_centrocusto(),
                 objeto.getDt_lancamento());
 
         return objeto;
-    }
-
-    public LocalDate obterUltimaData(List<ItemLancamento> itens) {
-        return new ArrayList<>(itens).stream()
-                .collect(Collectors.collectingAndThen(
-                        Collectors.toList(),
-                        list -> {
-                            Collections.reverse(list);
-                            return list.stream()
-                                    .map(ItemLancamento::getDt_itemlancamento)
-                                    .filter(Objects::nonNull)
-                                    .findFirst()
-                                    .orElse(null);
-                        }));
     }
 
     public void removerItens(Lancamento objeto, List<ItemLancamento> itensAtualizados) {
@@ -222,9 +203,18 @@ public class LancamentoService {
         Optional<Lancamento> objeto = repository.findById(id);
         competenciaService.verificarStatusCompetencia(objeto.get().getDt_anomes(), id_cliente);
 
+        Long id_clientetemp = objeto.get().getId_cliente();
+        Long id_centrocustotemp = objeto.get().getId_centrocusto();
+        LocalDate dt_lancamentotemp = objeto.get().getDt_lancamento();
+
         // movimentacaoRepository.deleteByIdLancamento(id);
         itemObjetoRepository.deleteByIdLancamento(id, competencia);
         repository.deleteById(id);
+
+        movimentacaoCaixaService.gravarMovimentoCaixa(
+                id_clientetemp,
+                id_centrocustotemp,
+                dt_lancamentotemp);
 
         return id;
     }
