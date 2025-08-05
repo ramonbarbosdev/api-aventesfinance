@@ -1,7 +1,12 @@
 package com.api_aventesfinance.service;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,6 +16,7 @@ import com.api_aventesfinance.dto.LancamentoDTO;
 import com.api_aventesfinance.enums.TipoCategoria;
 import com.api_aventesfinance.model.Categoria;
 import com.api_aventesfinance.model.Emprestimo;
+import com.api_aventesfinance.model.ItemEmprestimo;
 import com.api_aventesfinance.model.ItemLancamento;
 import com.api_aventesfinance.model.Lancamento;
 import com.api_aventesfinance.repository.CategoriaRepository;
@@ -32,10 +38,7 @@ public class LancamentoService {
     private CategoriaRepository categoriaRepository;
 
     @Autowired
-    private MovimentacaoLancamentoService movimentacaoService;
-
-    @Autowired
-    private MovimentacaoLancamentoRepository movimentacaoRepository;
+    private MovimentacaoCaixaService movimentacaoCaixaService;
 
     @Autowired
     private CompetenciaService competenciaService;
@@ -56,6 +59,8 @@ public class LancamentoService {
 
         removerItens(objeto, itens);
 
+        LocalDate ultimaData = obterUltimaData(itens);
+
         if (itens != null && itens.size() > 0) {
             for (ItemLancamento item : itens) {
                 item.setId_lancamento(objeto.getId_lancamento());
@@ -75,9 +80,29 @@ public class LancamentoService {
         objeto.setItens(itens);
         objeto = repository.save(objeto);
 
-        // movimentacaoService.atualizarMovimentacaoLancamento(objeto.getId_lancamento());
+        if (ultimaData == null)
+            ultimaData = objeto.getDt_lancamento();
+
+        movimentacaoCaixaService.gravarMovimentoCaixa(
+                objeto.getId_cliente(),
+                objeto.getId_centrocusto(),
+                objeto.getDt_lancamento());
 
         return objeto;
+    }
+
+    public LocalDate obterUltimaData(List<ItemLancamento> itens) {
+        return new ArrayList<>(itens).stream()
+                .collect(Collectors.collectingAndThen(
+                        Collectors.toList(),
+                        list -> {
+                            Collections.reverse(list);
+                            return list.stream()
+                                    .map(ItemLancamento::getDt_itemlancamento)
+                                    .filter(Objects::nonNull)
+                                    .findFirst()
+                                    .orElse(null);
+                        }));
     }
 
     public void removerItens(Lancamento objeto, List<ItemLancamento> itensAtualizados) {
