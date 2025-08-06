@@ -1,9 +1,11 @@
 package com.api_aventesfinance.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.api_aventesfinance.dto.relatorio.EvolucaoReceitaDespesaDTO;
 import com.api_aventesfinance.dto.relatorio.FluxoCaixaDTO;
 import com.api_aventesfinance.dto.relatorio.FluxoCaixaDiarioDTO;
 import com.api_aventesfinance.dto.relatorio.ReceitaDespesaCategoriaDTO;
@@ -32,6 +34,10 @@ public class RelatorioFinanceiroService {
     }
     public List<SituacaoEmprestimoDTO> obterSituacaoEmprestimo(String competencia, Long id_cliente) {
         return repository.buscarSituacaoEmprestimo( competencia, id_cliente);
+    }
+    public List<EvolucaoReceitaDespesaDTO> obterEvolucaoReceitaDespesa( Long id_cliente) {
+         LocalDate dataAtual = LocalDate.now(); 
+        return repository.buscarEvolucaoReceitaDespesa(  id_cliente,dataAtual );
     }
 
 }

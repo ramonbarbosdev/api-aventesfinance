@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
+import com.api_aventesfinance.dto.relatorio.EvolucaoReceitaDespesaDTO;
 import com.api_aventesfinance.dto.relatorio.FluxoCaixaDTO;
 import com.api_aventesfinance.dto.relatorio.FluxoCaixaDiarioDTO;
 import com.api_aventesfinance.dto.relatorio.ReceitaDespesaCategoriaDTO;
@@ -230,5 +231,46 @@ public class RelatorioFinanceiroRepository {
                 (Double) r[7]
 
         )).toList();
+    }
+
+    public List<EvolucaoReceitaDespesaDTO> buscarEvolucaoReceitaDespesa( Long id_cliente, LocalDate dt_atual) {
+        String sql = """
+            select
+                id_centrocusto ,
+                mc.dt_movimento,
+                id_cliente,
+                vl_receita,
+                vl_despesa
+            from movimentacao_caixa mc
+                where id_cliente = :id_cliente
+                  AND EXTRACT(YEAR FROM mc.dt_movimento) = EXTRACT(YEAR FROM CAST(:dt_atual AS DATE));
+                                                                                          """;
+
+        List<Object[]> results = em.createNativeQuery(sql)
+                .setParameter("id_cliente", id_cliente)
+                .setParameter("dt_atual", dt_atual)
+                .getResultList();
+
+          double[] receitaAcumulado = { 0.0 };
+          double[] despesaAcumulado = { 0.0 };
+
+       return results.stream().map(r -> {
+            Long id_centrocusto = (Long) r[0];
+            LocalDate dt_movimento = ((java.sql.Date) r[1]).toLocalDate();
+            Long id_clientetemp = (Long) r[2];
+            Double vl_receita = (Double) r[3];
+            Double vl_despesa = (Double) r[4];
+
+            receitaAcumulado[0] += vl_receita;
+            despesaAcumulado[0] += vl_despesa;
+
+            return new EvolucaoReceitaDespesaDTO(
+                id_centrocusto,
+                dt_movimento,
+                id_clientetemp,
+                receitaAcumulado[0],
+                despesaAcumulado[0]
+        );
+        }).toList();
     }
 }

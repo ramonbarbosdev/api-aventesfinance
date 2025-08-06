@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.api_aventesfinance.dto.relatorio.EvolucaoReceitaDespesaDTO;
 import com.api_aventesfinance.dto.relatorio.FluxoCaixaDTO;
 import com.api_aventesfinance.dto.relatorio.FluxoCaixaDiarioDTO;
 import com.api_aventesfinance.dto.relatorio.ReceitaDespesaCategoriaDTO;
@@ -58,6 +59,14 @@ public class RelatorioFinanceiroController {
      @RequestHeader(value = "X-Cliente", required = false) String id_cliente) {
 
        List<SituacaoEmprestimoDTO> resultado = service.obterSituacaoEmprestimo(competencia, Long.valueOf(id_cliente));
+
+        return new ResponseEntity<>(resultado, HttpStatus.CREATED);
+    }
+
+    @GetMapping(value = "/evolucao-receita-despesa", produces = "application/json")
+    public ResponseEntity<List<?>> obterEvolucaoReceitaDespesa( @RequestHeader(value = "X-Cliente", required = false) String id_cliente) {
+
+       List<EvolucaoReceitaDespesaDTO> resultado = service.obterEvolucaoReceitaDespesa( Long.valueOf(id_cliente));
 
         return new ResponseEntity<>(resultado, HttpStatus.CREATED);
     }
