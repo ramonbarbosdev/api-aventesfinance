@@ -3,7 +3,7 @@ name: Build and Push Docker image to Docker Hub
 on:
   push:
     branches:
-      - main 
+      - feature/00/ec2 
 
 jobs:
   build-and-push:
